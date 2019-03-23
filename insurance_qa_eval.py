@@ -9,7 +9,7 @@ from time import strftime, gmtime, time
 import pickle
 import json
 
-import thread
+import threading
 from scipy.stats import rankdata
 
 random.seed(42)
@@ -229,7 +229,7 @@ if __name__ == '__main__':
         def start_server():
             app.run(debug=False, use_evalex=False, port=port)
 
-        thread.start_new_thread(start_server, tuple())
+        threading.Thread(target=start_server, args=tuple()).start()
         print('Serving to port %d' % port, file=sys.stderr)
 
     import numpy as np
