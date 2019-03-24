@@ -127,7 +127,7 @@ class Evaluator:
             #     bad_answers = self.pada(random.sample(self.answers.values(), len(good_answers)))
             # else:
             #     bad_answers = self.pada(get_bad_samples(indices, top_50))
-            bad_answers = self.pada(random.sample(self.answers.values(), len(good_answers)))
+            bad_answers = self.pada(random.sample(list(self.answers.values()), len(good_answers)))
 
             print('Fitting epoch %d' % i, file=sys.stderr)
             hist = self.model.fit([questions, good_answers, bad_answers], epochs=1, batch_size=batch_size,
