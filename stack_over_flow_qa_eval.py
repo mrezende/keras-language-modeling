@@ -25,7 +25,7 @@ class Evaluator:
         try:
             data_path = os.environ['STACK_OVER_FLOW_QA']
         except KeyError:
-            print("STACK_OVER_FLOW_QA is not set. Set it to your clone of https://github.com/codekansas/insurance_qa_python")
+            print("STACK_OVER_FLOW_QA is not set. Set it to your clone of https://github.com/mrezende/stack_over_flow_python")
             sys.exit(1)
         if isinstance(conf, str):
             conf = json.load(open(conf, 'rb'))
