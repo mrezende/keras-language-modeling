@@ -264,7 +264,7 @@ if __name__ == '__main__':
     }
 
     from keras_models import EmbeddingModel, ConvolutionModel, ConvolutionalLSTM
-    evaluator = Evaluator(conf, model=ConvolutionModel, optimizer='adam')
+    evaluator = Evaluator(conf, model=ConvolutionalLSTM, optimizer='adam')
 
     # train the model
     best_loss = evaluator.train()
