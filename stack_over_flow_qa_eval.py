@@ -262,4 +262,5 @@ if __name__ == '__main__':
 
         log(' - MRR:')
         log('   - %.3f on test 1' % mrr[0])
+        clear_session()
 
