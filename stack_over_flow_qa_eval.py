@@ -137,8 +137,8 @@ class Evaluator:
             bad_answers = self.pada(random.sample(self.answers, len(good_answers)))
 
             print('Fitting epoch %d' % i, file=sys.stderr)
-            hist = self.model.fit([questions, good_answers, bad_answers], epochs=1, batch_size=batch_size,
-                                  validation_split=validation_split, verbose=1)
+            hist = self.model.fit([questions, good_answers, bad_answers], epochs=4, batch_size=batch_size,
+                                  validation_split=validation_split, verbose=2)
 
             if hist.history['val_loss'][0] < val_loss['loss']:
                 val_loss = {'loss': hist.history['val_loss'][0], 'epoch': i}
@@ -241,42 +241,22 @@ if __name__ == '__main__':
 
     import numpy as np
 
-    conf = {
-        'n_words': 8171,
-        'question_len': 150,
-        'answer_len': 150,
-        'margin': 0.009,
-        'initial_embed_weights': 'word2vec_100_dim.embeddings',
-
-        'training': {
-            'batch_size': 128,
-            'nb_epoch': 10,
-            'validation_split': 0.1,
-        },
-
-        'similarity': {
-            'mode': 'cosine',
-            'gamma': 1,
-            'c': 1,
-            'd': 2,
-            'dropout': 0.5,
-        }
-    }
+    confs = json.load(open('stack_over_flow_conf.json', 'r'))
 
     from keras_models import EmbeddingModel, ConvolutionModel, ConvolutionalLSTM
-    evaluator = Evaluator(conf, model=ConvolutionalLSTM, optimizer='adam')
+    for conf in confs:
+        print(conf)
+        evaluator = Evaluator(conf, model=ConvolutionalLSTM, optimizer='adam')
 
-    # train the model
-    best_loss = evaluator.train()
+        # train the model
+        best_loss = evaluator.train()
 
-    # evaluate mrr for a particular epoch
-    evaluator.load_epoch(best_loss['epoch'])
-    top1, mrr = evaluator.get_score(verbose=False)
-    log(' - Top-1 Precision:')
-    log('   - %.3f on test 1' % top1[0])
-    log('   - %.3f on test 2' % top1[1])
-    log('   - %.3f on dev' % top1[2])
-    log(' - MRR:')
-    log('   - %.3f on test 1' % mrr[0])
-    log('   - %.3f on test 2' % mrr[1])
-    log('   - %.3f on dev' % mrr[2])
+        # evaluate mrr for a particular epoch
+        evaluator.load_epoch(best_loss['epoch'])
+        top1, mrr = evaluator.get_score(verbose=False)
+        log(' - Top-1 Precision:')
+        log('   - %.3f on test 1' % top1[0])
+
+        log(' - MRR:')
+        log('   - %.3f on test 1' % mrr[0])
+
