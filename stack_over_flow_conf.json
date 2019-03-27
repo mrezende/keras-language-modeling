@@ -1,46 +1,6 @@
-[{
-        "n_words": 8171,
-        "question_len": 150,
-        "answer_len": 150,
-        "margin": 0.009,
-        "initial_embed_weights": "word2vec_100_dim.embeddings",
+[
 
-        "training": {
-            "batch_size": 256,
-            "nb_epoch": 10,
-            "validation_split": 0.2
-        },
-
-        "similarity": {
-            "mode": "cosine",
-            "gamma": 1,
-            "c": 1,
-            "d": 2,
-            "dropout": 0.5
-        }
-    },
-
-  {
-        "n_words": 8171,
-        "question_len": 150,
-        "answer_len": 150,
-        "margin": 0.009,
-        "initial_embed_weights": "word2vec_100_dim.embeddings",
-
-        "training": {
-            "batch_size": 256,
-            "nb_epoch": 10,
-            "validation_split": 0.1
-        },
-
-        "similarity": {
-            "mode": "cosine",
-            "gamma": 1,
-            "c": 1,
-            "d": 2,
-            "dropout": 0.5
-        }
-    },
+  
 
   {
         "n_words": 8171,
