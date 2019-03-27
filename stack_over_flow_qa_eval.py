@@ -140,7 +140,7 @@ class Evaluator:
             bad_answers = self.pada(random.sample(self.answers, len(good_answers)))
 
             print('Fitting epoch %d' % i, file=sys.stderr)
-            hist = self.model.fit([questions, good_answers, bad_answers], epochs=4, batch_size=batch_size,
+            hist = self.model.fit([questions, good_answers, bad_answers], epochs=1, batch_size=batch_size,
                                   validation_split=validation_split, verbose=2)
 
             if hist.history['val_loss'][0] < val_loss['loss']:
