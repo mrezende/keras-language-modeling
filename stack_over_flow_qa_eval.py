@@ -9,12 +9,15 @@ from time import strftime, gmtime, time
 import pickle
 import json
 from keras.preprocessing.text import Tokenizer
+from keras import backend as K
 
 import threading
 from scipy.stats import rankdata
 
 random.seed(42)
 
+def clear_session():
+    K.clear_session()
 
 def log(x):
     print(x)
