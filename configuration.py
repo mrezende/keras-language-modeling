@@ -10,6 +10,7 @@ class Conf:
 
     def name(self):
         str = json.dumps(self.conf)
+        m = hashlib.sha256()
         m.update(str.encode('utf-8'))
         return m.hexdigest()[:6]
 
