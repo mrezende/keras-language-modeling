@@ -1,3 +1,4 @@
+
 from __future__ import print_function
 
 import os
@@ -5,22 +6,38 @@ import os
 import sys
 import random
 from time import strftime, gmtime, time
+from report_result import ReportResult
+from configuration import Conf
 
 import pickle
 import json
 from keras.preprocessing.text import Tokenizer
 from keras import backend as K
+from keras.callbacks import EarlyStopping
+from keras.models import model_from_json
 
 import threading
 from scipy.stats import rankdata
+import logging
 
 random.seed(42)
 
+def save_model_architecture(model, model_name = 'baseline'):
+    # save the model's architecture
+    json_string = model.to_json()
+
+    with open(f'model/model_architecture_{model_name}.json', 'w') as write_file:
+        write_file.write(json_string)
+    logger.info(f'Models architecture saved: model/model_architecture_{model_name}.json')
+
+def save_model_weights(model, model_name='baseline'):
+
+    # save the trained model weights
+    model.save_weights(f'model/train_weights_{model_name}.h5', overwrite=True)
+    logger.info(f'Model weights saved: model/train_weights_{model_name}.h5')
+
 def clear_session():
     K.clear_session()
-
-def log(x):
-    print(x)
 
 
 class Evaluator:
@@ -30,12 +47,11 @@ class Evaluator:
         except KeyError:
             print("STACK_OVER_FLOW_QA is not set. Set it to your clone of https://github.com/mrezende/stack_over_flow_python")
             sys.exit(1)
-        if isinstance(conf, str):
-            conf = json.load(open(conf, 'rb'))
+        self.conf = Conf(conf)
         self.model = model(conf)
+
         self.path = data_path
-        self.conf = conf
-        self.params = conf['training']
+        self.params = conf.training_params()
         optimizer = self.params['optimizer'] if optimizer is None else optimizer
         self.model.compile(optimizer)
 
@@ -67,12 +83,13 @@ class Evaluator:
 
     ##### Loading / saving #####
 
-    def save_epoch(self, epoch):
+    def save_epoch(self):
         if not os.path.exists('models/'):
             os.makedirs('models/')
+
         self.model.save_weights('models/weights_epoch_%d.h5' % epoch, overwrite=True)
 
-    def load_epoch(self, epoch):
+    def load_epoch(self):
         assert os.path.exists('models/weights_epoch_%d.h5' % epoch), 'Weights at epoch %d not found' % epoch
         self.model.load_weights('models/weights_epoch_%d.h5' % epoch)
 
@@ -91,10 +108,10 @@ class Evaluator:
     ##### Padding #####
 
     def padq(self, data):
-        return self.pad(data, self.conf.get('question_len', None))
+        return self.pad(data, self.conf.question_len())
 
     def pada(self, data):
-        return self.pad(data, self.conf.get('answer_len', None))
+        return self.pad(data, self.conf.answer_len())
 
     def pad(self, data, len=None):
         from keras.preprocessing.sequence import pad_sequences
@@ -107,8 +124,8 @@ class Evaluator:
 
     def train(self):
         batch_size = self.params['batch_size']
-        nb_epoch = self.params['nb_epoch']
         validation_split = self.params['validation_split']
+        epochs = self.params['epochs']
 
         training_set = self.load('train.json')
         # top_50 = self.load('top_50')
@@ -121,37 +138,42 @@ class Evaluator:
             questions += [q['question']] * len(q['answers'])
             good_answers += [i for i in q['answers']]
             indices += [j] * len(q['answers'])
-        log('Began training at %s on %d samples' % (self.get_time(), len(questions)))
+        logger.info('Began training at %s on %d samples' % (self.get_time(), len(questions)))
 
         questions = self.padq(questions)
         good_answers = self.pada(good_answers)
 
-        val_loss = {'loss': 1., 'epoch': 0}
+
 
         # def get_bad_samples(indices, top_50):
         #     return [self.answers[random.choice(top_50[i])] for i in indices]
 
-        for i in range(1, nb_epoch+1):
-            # sample from all answers to get bad answers
-            # if i % 2 == 0:
-            #     bad_answers = self.pada(random.sample(self.answers.values(), len(good_answers)))
-            # else:
-            #     bad_answers = self.pada(get_bad_samples(indices, top_50))
-            bad_answers = self.pada(random.sample(self.answers, len(good_answers)))
 
-            print('Fitting epoch %d' % i, file=sys.stderr)
-            hist = self.model.fit([questions, good_answers, bad_answers], epochs=1, batch_size=batch_size,
-                                  validation_split=validation_split, verbose=2)
+        # sample from all answers to get bad answers
+        # if i % 2 == 0:
+        #     bad_answers = self.pada(random.sample(self.answers.values(), len(good_answers)))
+        # else:
+        #     bad_answers = self.pada(get_bad_samples(indices, top_50))
+        bad_answers = self.pada(random.sample(self.answers, len(good_answers)))
 
-            if hist.history['val_loss'][0] < val_loss['loss']:
-                val_loss = {'loss': hist.history['val_loss'][0], 'epoch': i}
-            log('%s -- Epoch %d ' % (self.get_time(), i) +
-                'Loss = %.4f, Validation Loss = %.4f ' % (hist.history['loss'][0], hist.history['val_loss'][0]) +
-                '(Best: Loss = %.4f, Epoch = %d)' % (val_loss['loss'], val_loss['epoch']))
 
-            self.save_epoch(i)
+        hist = self.model.fit([questions, good_answers, bad_answers], epochs=epochs, batch_size=batch_size,
+                              validation_split=validation_split, verbose=2)
 
-        return val_loss
+        # save plot val_loss, loss
+        ReportResult(hist.history, )
+        df = pd.DataFrame(hist.history)
+        df.insert(0, 'epochs', range(0, len(df)))
+        df = pd.melt(df, id_vars=['epochs'])
+        plot = ggplot(aes(x='epochs', y='value', color='variable'), data=df) + geom_line()
+        filename = f'{model_name}_plot.png'
+        logger.info(f'saving loss, val_loss plot: {filename}')
+        plot.save(filename)
+
+        # save_model_architecture(prediction_model, model_name=model_name)
+        self.save_epoch()
+
+        clear_session()
 
     ##### Evaluation #####
 
@@ -222,13 +244,17 @@ class Evaluator:
 
 
 if __name__ == '__main__':
+    # configure logging
+    logger = logging.getLogger(os.path.basename(sys.argv[0]))
+    logging.basicConfig(format='%(asctime)s: %(levelname)s: %(message)s')
+    logging.root.setLevel(level=logging.INFO)
+    logger.info('running %s' % ' '.join(sys.argv))
     if len(sys.argv) >= 2 and sys.argv[1] == 'serve':
         from flask import Flask
         app = Flask(__name__)
         port = 5000
         lines = list()
-        def log(x):
-            lines.append(x)
+
 
         @app.route('/')
         def home():
@@ -248,7 +274,7 @@ if __name__ == '__main__':
 
     from keras_models import EmbeddingModel, ConvolutionModel, ConvolutionalLSTM
     for conf in confs:
-        print(conf)
+        logger.info(f'Conf.json: {conf}')
         evaluator = Evaluator(conf, model=ConvolutionalLSTM, optimizer='adam')
 
         # train the model
@@ -257,10 +283,10 @@ if __name__ == '__main__':
         # evaluate mrr for a particular epoch
         evaluator.load_epoch(best_loss['epoch'])
         top1, mrr = evaluator.get_score(verbose=False)
-        log(' - Top-1 Precision:')
-        log('   - %.3f on test 1' % top1[0])
+        logger.info(' - Top-1 Precision:')
+        logger.info('   - %.3f on test 1' % top1[0])
 
-        log(' - MRR:')
-        log('   - %.3f on test 1' % mrr[0])
+        logger.info(' - MRR:')
+        logger.info('   - %.3f on test 1' % mrr[0])
         clear_session()
 

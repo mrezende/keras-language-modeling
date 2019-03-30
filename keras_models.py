@@ -12,12 +12,12 @@ import numpy as np
 
 class LanguageModel:
     def __init__(self, config):
-        self.question = Input(shape=(config['question_len'],), dtype='int32', name='question_base')
-        self.answer_good = Input(shape=(config['answer_len'],), dtype='int32', name='answer_good_base')
-        self.answer_bad = Input(shape=(config['answer_len'],), dtype='int32', name='answer_bad_base')
+        self.question = Input(shape=(config.question_len(),), dtype='int32', name='question_base')
+        self.answer_good = Input(shape=(config.answer_len(),), dtype='int32', name='answer_good_base')
+        self.answer_bad = Input(shape=(config.answer_len(),), dtype='int32', name='answer_bad_base')
 
         self.config = config
-        self.params = config.get('similarity', dict())
+        self.params = config.similarity_params()
 
         # initialize a bunch of variables that will be set later
         self._models = None
@@ -30,7 +30,7 @@ class LanguageModel:
 
     def get_answer(self):
         if self._answer is None:
-            self._answer = Input(shape=(self.config['answer_len'],), dtype='int32', name='answer')
+            self._answer = Input(shape=(self.config.answer_len(),), dtype='int32', name='answer')
         return self._answer
 
     @abstractmethod
@@ -119,7 +119,7 @@ class LanguageModel:
         #              mode=lambda x: K.relu(self.config['margin'] - x[0] + x[1]),
         #              output_shape=lambda x: x[0])
 
-        loss = Lambda(lambda x: K.relu(self.config['margin'] - x[0] + x[1]),
+        loss = Lambda(lambda x: K.relu(self.config.margin() - x[0] + x[1]),
                       output_shape=lambda x: x[0])([good_similarity, bad_similarity])
 
         self.prediction_model = Model(inputs=[self.question, self.answer_good], outputs=good_similarity,
@@ -154,8 +154,8 @@ class EmbeddingModel(LanguageModel):
         answer = self.get_answer()
 
         # add embedding layers
-        weights = np.load(self.config['initial_embed_weights'])
-        embedding = Embedding(input_dim=self.config['n_words'],
+        weights = np.load(self.config.initial_embed_weights())
+        embedding = Embedding(input_dim=self.config.n_words(),
                               output_dim=weights.shape[1],
                               mask_zero=True,
                               # dropout=0.2,
@@ -174,14 +174,14 @@ class EmbeddingModel(LanguageModel):
 
 class ConvolutionModel(LanguageModel):
     def build(self):
-        assert self.config['question_len'] == self.config['answer_len']
+        assert self.config.question_len() == self.config.answer_len()
 
         question = self.question
         answer = self.get_answer()
 
         # add embedding layers
-        weights = np.load(self.config['initial_embed_weights'])
-        embedding = Embedding(input_dim=self.config['n_words'],
+        weights = np.load(self.config.initial_embed_weights())
+        embedding = Embedding(input_dim=self.config.n_words(),
                               output_dim=weights.shape[1],
                               weights=[weights])
         question_embedding = embedding(question)
@@ -220,8 +220,8 @@ class ConvolutionalLSTM(LanguageModel):
         answer = self.get_answer()
 
         # add embedding layers
-        weights = np.load(self.config['initial_embed_weights'])
-        embedding = Embedding(input_dim=self.config['n_words'],
+        weights = np.load(self.config.initial_embed_weights())
+        embedding = Embedding(input_dim=self.config.n_words(),
                               output_dim=weights.shape[1],
                               weights=[weights])
         question_embedding = embedding(question)
@@ -264,8 +264,8 @@ class AttentionModel(LanguageModel):
         answer = self.get_answer()
 
         # add embedding layers
-        weights = np.load(self.config['initial_embed_weights'])
-        embedding = Embedding(input_dim=self.config['n_words'],
+        weights = np.load(self.config.initial_embed_weights())
+        embedding = Embedding(input_dim=self.config.n_words(),
                               output_dim=weights.shape[1],
                               # mask_zero=True,
                               weights=[weights])
