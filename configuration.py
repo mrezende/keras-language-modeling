@@ -9,7 +9,7 @@ class Conf:
 
 
     def name(self):
-        str = json.dumps(conf[0])
+        str = json.dumps(self.conf)
         m.update(str.encode('utf-8'))
         return m.hexdigest()[:6]
 
