@@ -9,6 +9,8 @@ from time import strftime, gmtime, time
 from report_result import ReportResult
 from configuration import Conf
 
+import argparse
+
 import pickle
 import json
 from keras.preprocessing.text import Tokenizer
@@ -21,20 +23,6 @@ from scipy.stats import rankdata
 import logging
 
 random.seed(42)
-
-def save_model_architecture(model, model_name = 'baseline'):
-    # save the model's architecture
-    json_string = model.to_json()
-
-    with open(f'model/model_architecture_{model_name}.json', 'w') as write_file:
-        write_file.write(json_string)
-    logger.info(f'Models architecture saved: model/model_architecture_{model_name}.json')
-
-def save_model_weights(model, model_name='baseline'):
-
-    # save the trained model weights
-    model.save_weights(f'model/train_weights_{model_name}.h5', overwrite=True)
-    logger.info(f'Model weights saved: model/train_weights_{model_name}.h5')
 
 def clear_session():
     K.clear_session()
@@ -49,6 +37,7 @@ class Evaluator:
             sys.exit(1)
         self.conf = Conf(conf)
         self.model = model(conf)
+        self.name = self.conf.name()
 
         self.path = data_path
         self.params = conf.training_params()
@@ -87,11 +76,11 @@ class Evaluator:
         if not os.path.exists('models/'):
             os.makedirs('models/')
 
-        self.model.save_weights('models/weights_epoch_%d.h5' % epoch, overwrite=True)
+        self.model.save_weights(f'models/weights_epoch_{self.name}.h5', overwrite=True)
 
     def load_epoch(self):
-        assert os.path.exists('models/weights_epoch_%d.h5' % epoch), 'Weights at epoch %d not found' % epoch
-        self.model.load_weights('models/weights_epoch_%d.h5' % epoch)
+        assert os.path.exists(f'models/weights_epoch_{self.name}.h5'), f'Weights at epoch {self.name} not found'
+        self.model.load_weights(f'models/weights_epoch_{self.name}.h5')
 
     ##### Converting / reverting #####
 
@@ -161,14 +150,10 @@ class Evaluator:
                               validation_split=validation_split, verbose=2)
 
         # save plot val_loss, loss
-        ReportResult(hist.history, )
-        df = pd.DataFrame(hist.history)
-        df.insert(0, 'epochs', range(0, len(df)))
-        df = pd.melt(df, id_vars=['epochs'])
-        plot = ggplot(aes(x='epochs', y='value', color='variable'), data=df) + geom_line()
-        filename = f'{model_name}_plot.png'
+        report = ReportResult(hist.history, self.name)
+        filename = report.generate_line_report()
         logger.info(f'saving loss, val_loss plot: {filename}')
-        plot.save(filename)
+
 
         # save_model_architecture(prediction_model, model_name=model_name)
         self.save_epoch()
@@ -244,49 +229,45 @@ class Evaluator:
 
 
 if __name__ == '__main__':
+
+
+    parser = argparse.ArgumentParser(description='run question answer selection')
+    parser.add_argument('--mode', metavar='MODE', type=str, default="train", help='mode: train/predict/test')
+
+    args = parser.parse_args()
+
     # configure logging
     logger = logging.getLogger(os.path.basename(sys.argv[0]))
     logging.basicConfig(format='%(asctime)s: %(levelname)s: %(message)s')
     logging.root.setLevel(level=logging.INFO)
     logger.info('running %s' % ' '.join(sys.argv))
-    if len(sys.argv) >= 2 and sys.argv[1] == 'serve':
-        from flask import Flask
-        app = Flask(__name__)
-        port = 5000
-        lines = list()
 
-
-        @app.route('/')
-        def home():
-            return ('<html><body><h1>Training Log</h1>' +
-                    ''.join(['<code>{}</code><br/>'.format(line) for line in lines]) +
-                    '</body></html>')
-
-        def start_server():
-            app.run(debug=False, use_evalex=False, port=port)
-
-        threading.Thread(target=start_server, args=tuple()).start()
-        print('Serving to port %d' % port, file=sys.stderr)
-
-    import numpy as np
+    mode = args.mode
 
     confs = json.load(open('stack_over_flow_conf.json', 'r'))
-
     from keras_models import EmbeddingModel, ConvolutionModel, ConvolutionalLSTM
-    for conf in confs:
-        logger.info(f'Conf.json: {conf}')
-        evaluator = Evaluator(conf, model=ConvolutionalLSTM, optimizer='adam')
 
-        # train the model
-        best_loss = evaluator.train()
+    if mode == 'train':
 
-        # evaluate mrr for a particular epoch
-        evaluator.load_epoch(best_loss['epoch'])
-        top1, mrr = evaluator.get_score(verbose=False)
-        logger.info(' - Top-1 Precision:')
-        logger.info('   - %.3f on test 1' % top1[0])
+        for conf in confs:
+            logger.info(f'Conf.json: {conf}')
+            evaluator = Evaluator(conf, model=ConvolutionalLSTM, optimizer='adam')
+            # train the model
+            evaluator.train()
 
-        logger.info(' - MRR:')
-        logger.info('   - %.3f on test 1' % mrr[0])
-        clear_session()
+    elif mode == 'predict':
+
+        for conf in confs:
+            logger.info(f'Conf.json: {conf}')
+            evaluator = Evaluator(conf, model=ConvolutionalLSTM, optimizer='adam')
+            # evaluate mrr for a particular epoch
+            evaluator.load_epoch()
+            top1, mrr = evaluator.get_score(verbose=False)
+            logger.info(' - Top-1 Precision:')
+            logger.info('   - %.3f on test 1' % top1[0])
+
+            logger.info(' - MRR:')
+            logger.info('   - %.3f on test 1' % mrr[0])
+
+
 

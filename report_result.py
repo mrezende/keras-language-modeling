@@ -16,4 +16,5 @@ class ReportResult:
         plot = ggplot(aes(x='epochs', y='value', color='variable'), data=self.df) + geom_line()
         filename = f'{self.plot_name}.png'
         plot.save(filename)
+        return filename
 
