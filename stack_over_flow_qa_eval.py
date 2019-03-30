@@ -29,18 +29,18 @@ def clear_session():
 
 
 class Evaluator:
-    def __init__(self, conf, model, optimizer=None):
+    def __init__(self, conf_json, model, optimizer=None):
         try:
             data_path = os.environ['STACK_OVER_FLOW_QA']
         except KeyError:
             print("STACK_OVER_FLOW_QA is not set. Set it to your clone of https://github.com/mrezende/stack_over_flow_python")
             sys.exit(1)
-        self.conf = Conf(conf)
-        self.model = model(conf)
+        self.conf = Conf(conf_json)
+        self.model = model(self.conf)
         self.name = self.conf.name()
 
         self.path = data_path
-        self.params = conf.training_params()
+        self.params = self.conf.training_params()
         optimizer = self.params['optimizer'] if optimizer is None else optimizer
         self.model.compile(optimizer)
 
