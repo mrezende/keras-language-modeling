@@ -8,6 +8,7 @@ import random
 from time import strftime, gmtime, time
 from report_result import ReportResult
 from configuration import Conf
+from compile_results import CompileResults
 
 import argparse
 
@@ -233,6 +234,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='run question answer selection')
     parser.add_argument('--mode', metavar='MODE', type=str, default="train", help='mode: train/predict/test')
+    parser.add_argument('--conf_file', metavar='MODE', type=str, default="stack_over_flow_conf.json", help='conf json file: stack_over_flow_conf.json')
 
     args = parser.parse_args()
 
@@ -244,7 +246,9 @@ if __name__ == '__main__':
 
     mode = args.mode
 
-    confs = json.load(open('stack_over_flow_conf.json', 'r'))
+    conf_file = args.conf_file
+
+    confs = json.load(open(conf_file, 'r'))
     from keras_models import EmbeddingModel, ConvolutionModel, ConvolutionalLSTM
 
     if mode == 'train':
@@ -254,6 +258,10 @@ if __name__ == '__main__':
             evaluator = Evaluator(conf, model=ConvolutionalLSTM, optimizer='adam')
             # train the model
             evaluator.train()
+
+        # move models, plots to results folder with timestamp
+        compile_results = CompileResults(conf_file)
+        compile_results.save_results()
 
     elif mode == 'predict':
 
@@ -269,7 +277,7 @@ if __name__ == '__main__':
             logger.info(' - MRR:')
             logger.info('   - %.3f on test 1' % mrr[0])
 
-            # folder = datetime.datetime.now().strftime('reports/results_%m_%d_%Y/%H_%M_%S')
+
 
 
 
