@@ -269,5 +269,7 @@ if __name__ == '__main__':
             logger.info(' - MRR:')
             logger.info('   - %.3f on test 1' % mrr[0])
 
+            # folder = datetime.datetime.now().strftime('reports/results_%m_%d_%Y/%H_%M_%S')
+
 
 

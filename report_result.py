@@ -14,7 +14,11 @@ class ReportResult:
         self.df.insert(0, 'epochs', range(0, len(self.df)))
         self.df = pd.melt(self.df, id_vars=['epochs'])
         plot = ggplot(aes(x='epochs', y='value', color='variable'), data=self.df) + geom_line()
-        filename = f'{self.plot_name}.png'
-        plot.save(filename)
-        return filename
 
+
+    def save_plot(self, plot):
+        if not os.path.exists('plots/'):
+            os.makedirs('plots/')
+        filename = f'{self.plot_name}_plot.png'
+        plot.save(f'plots/{filename}')
+        return filename
