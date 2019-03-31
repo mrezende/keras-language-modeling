@@ -8,9 +8,10 @@ import random
 from time import strftime, gmtime, time
 from report_result import ReportResult
 from configuration import Conf
-from compile_results import CompileResults
+from archive_results import ArchiveResults
 
 import argparse
+import shutil
 
 import pickle
 import json
@@ -28,6 +29,8 @@ random.seed(42)
 def clear_session():
     K.clear_session()
 
+def remove_plots():
+    shutil.rmtree('plots')
 
 class Evaluator:
     def __init__(self, conf_json, model, optimizer=None):
@@ -271,6 +274,7 @@ if __name__ == '__main__':
     from keras_models import EmbeddingModel, ConvolutionModel, ConvolutionalLSTM
 
     if mode == 'train':
+        archive_results = ArchiveResults()
 
         for conf in confs:
             logger.info(f'Conf.json: {conf}')
@@ -278,11 +282,17 @@ if __name__ == '__main__':
             # train the model
             evaluator.train()
 
-        # archive models, plots
-        compile_results = CompileResults(conf_file)
-        compile_results.save_training_results()
+            # archive models, plots
+
+            archive_results.save_training_results(conf)
+
+        archive_results.save_conf_list()
+        archive_results.save_conf_file(conf_file)
+
+        remove_plots()
 
     elif mode == 'predict':
+        archive_results = ArchiveResults()
 
         for conf in confs:
             logger.info(f'Conf.json: {conf}')
@@ -299,9 +309,11 @@ if __name__ == '__main__':
             #save score per conf
             evaluator.save_score()
 
-        # archive models, conf file, score results
-        compile_results = CompileResults(conf_file)
-        compile_results.save_predict_results()
+            # archive models, conf file, score results
+
+            archive_results.save_predict_results(conf)
+
+        archive_results.save_conf_file(conf_file)
 
 
 
