@@ -160,7 +160,7 @@ class Evaluator:
         plot = report.generate_line_report()
         report.save_plot(plot)
 
-        logger.info(f'saving loss, val_loss plot: {filename}')
+        logger.info(f'saving loss, val_loss plot')
 
 
         # save_model_architecture(prediction_model, model_name=model_name)
