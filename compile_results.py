@@ -43,4 +43,4 @@ class CompileResults:
 
 
     def move(self, src, dest):
-        shutil.move(src, dest)
+        shutil.move(os.path.abspath(src), dest)
