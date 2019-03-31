@@ -24,8 +24,7 @@ class ArchiveResults:
 
         # copy models to archive folder
         models_folder = 'models'
-        models_filename = f'models/weights_epoch_{conf.name()}.h5'
-        models_file = os.path.join(models_folder, models_filename)
+        models_file = f'models/weights_epoch_{conf.name()}.h5'
 
         os.makedirs(os.path.join(self.base_folder, models_folder), exist_ok=True)
         archive_models_file = os.path.join(self.base_folder, models_file)
@@ -38,8 +37,7 @@ class ArchiveResults:
         conf = Conf(conf_json)
         # copy models to archive folder
         models_folder = 'models'
-        models_filename = f'models/weights_epoch_{conf.name()}.h5'
-        models_file = os.path.join(models_folder, models_filename)
+        models_file = f'models/weights_epoch_{conf.name()}.h5'
 
         os.makedirs(os.path.join(self.base_folder, models_folder), exist_ok=True)
         archive_models_file = os.path.join(self.base_folder, models_file)
