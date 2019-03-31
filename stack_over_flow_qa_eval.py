@@ -49,8 +49,13 @@ class Evaluator:
         self._vocab = None
         self._reverse_vocab = None
         self._eval_sets = None
+        self.top1_ls = []
+        self.mrr_ls = []
 
     ##### Resources #####
+
+    def save_conf(self):
+        self.conf.save_conf()
 
     def load(self, name):
         return json.load(open(os.path.join(self.path, name), 'r'))
@@ -159,6 +164,9 @@ class Evaluator:
         # save_model_architecture(prediction_model, model_name=model_name)
         self.save_epoch()
 
+        # save conf
+        self.save_conf()
+
         clear_session()
 
     ##### Evaluation #####
@@ -226,7 +234,16 @@ class Evaluator:
             print('MRR: %f' % mrr)
             top1_ls.append(top1)
             mrr_ls.append(mrr)
-        return top1_ls, mrr_ls
+        self.top1_ls = top1_ls
+        self.mrr_ls = mrr_ls
+        return self.top1_ls, self.mrr_ls
+
+    def save_score(self):
+        with open('results_conf.txt', 'a+') as append_file:
+            conf_json, name = self.conf.conf_json_and_name()
+            top1_precisions = ','.join(self.top1_ls)
+            mrrs = ','.join(self.mrr_ls)
+            append_file.write(f'{name}; {conf_json}; top-1 precision: {top1_precisions}; MRR: {mrrs}\n')
 
 
 if __name__ == '__main__':
@@ -255,19 +272,19 @@ if __name__ == '__main__':
 
         for conf in confs:
             logger.info(f'Conf.json: {conf}')
-            evaluator = Evaluator(conf, model=ConvolutionalLSTM, optimizer='adam')
+            evaluator = Evaluator(conf, model=ConvolutionalLSTM)
             # train the model
             evaluator.train()
 
-        # move models, plots to results folder with timestamp
+        # archive models, plots
         compile_results = CompileResults(conf_file)
-        compile_results.save_results()
+        compile_results.save_training_results()
 
     elif mode == 'predict':
 
         for conf in confs:
             logger.info(f'Conf.json: {conf}')
-            evaluator = Evaluator(conf, model=ConvolutionalLSTM, optimizer='adam')
+            evaluator = Evaluator(conf, model=ConvolutionalLSTM)
             # evaluate mrr for a particular epoch
             evaluator.load_epoch()
             top1, mrr = evaluator.get_score(verbose=False)
@@ -276,6 +293,13 @@ if __name__ == '__main__':
 
             logger.info(' - MRR:')
             logger.info('   - %.3f on test 1' % mrr[0])
+
+            #save score per conf
+            evaluator.save_score()
+
+        # archive models, conf file, score results
+        compile_results = CompileResults(conf_file)
+        compile_results.save_predict_results()
 
 
 

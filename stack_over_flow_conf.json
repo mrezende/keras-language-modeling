@@ -9,10 +9,12 @@
         "margin": 0.009,
         "initial_embed_weights": "word2vec_100_dim.embeddings",
 
+
         "training": {
             "batch_size": 128,
             "epochs": 4,
-            "validation_split": 0.2
+            "validation_split": 0.2,
+            "optimizer": "adam"
         },
 
         "similarity": {
@@ -31,10 +33,12 @@
         "margin": 0.009,
         "initial_embed_weights": "word2vec_100_dim.embeddings",
 
+
         "training": {
             "batch_size": 128,
             "epochs": 4,
-            "validation_split": 0.1
+            "validation_split": 0.1,
+            "optimizer": "adam"
         },
 
         "similarity": {

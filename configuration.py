@@ -34,3 +34,13 @@ class Conf:
 
     def n_words(self):
         return self.conf['n_words']
+
+    def conf_json_and_name(self):
+        conf_json = json.dumps(self.conf)
+        name = self.name()
+        return conf_json, name
+
+    def save_conf(self):
+        with open('conf_list.txt', 'a+') as append_file:
+            conf_json, name = self.conf_json_and_name()
+            append_file.write(f'{name};{conf_json}\n')
