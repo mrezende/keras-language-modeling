@@ -157,7 +157,9 @@ class Evaluator:
 
         # save plot val_loss, loss
         report = ReportResult(hist.history, self.name)
-        filename = report.generate_line_report()
+        plot = report.generate_line_report()
+        report.save_plot(plot)
+
         logger.info(f'saving loss, val_loss plot: {filename}')
 
 
