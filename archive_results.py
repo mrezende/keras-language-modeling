@@ -1,6 +1,7 @@
 import os
 import shutil
 import datetime
+from configuration import Conf
 
 
 class ArchiveResults:
@@ -9,7 +10,8 @@ class ArchiveResults:
             os.path.join('reports', 'training', 'results_%m_%d_%Y', '%H_%M_%S'))
         os.makedirs(self.base_folder, exist_ok=True)
 
-    def save_training_results(self, conf):
+    def save_training_results(self, conf_json):
+        conf = Conf(conf_json)
         # move plots to archive folder
         plot_folder = 'plots'
         plot_filename = f'{conf.name()}_plot.png'
@@ -32,7 +34,8 @@ class ArchiveResults:
 
 
 
-    def save_predict_results(self, conf):
+    def save_predict_results(self, conf_json):
+        conf = Conf(conf_json)
         # copy models to archive folder
         models_folder = 'models'
         models_filename = f'models/weights_epoch_{conf.name()}.h5'
