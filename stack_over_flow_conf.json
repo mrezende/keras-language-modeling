@@ -13,7 +13,7 @@
 
         "training": {
             "batch_size": 128,
-            "epochs": 4,
+            "nb_epoch": 10,
             "validation_split": 0.2,
             "optimizer": "adam"
         },

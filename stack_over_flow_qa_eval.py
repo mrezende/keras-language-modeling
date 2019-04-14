@@ -123,7 +123,7 @@ class Evaluator:
     def train(self):
         batch_size = self.params['batch_size']
         validation_split = self.params['validation_split']
-        epochs = self.params['epochs']
+        nb_epoch = self.params['nb_epoch']
 
         training_set = self.load('train.json')
         # top_50 = self.load('top_50')
@@ -142,32 +142,45 @@ class Evaluator:
         good_answers = self.pada(good_answers)
 
 
+        # According to NN Design Book:
+        # For this reason it is best to try several different initial guesses in order to ensure that
+        # a global minimum has been obtained.
 
         # def get_bad_samples(indices, top_50):
         #     return [self.answers[random.choice(top_50[i])] for i in indices]
 
+        val_loss = {'loss': 1., 'epoch': 0}
 
-        # sample from all answers to get bad answers
-        # if i % 2 == 0:
-        #     bad_answers = self.pada(random.sample(self.answers.values(), len(good_answers)))
-        # else:
-        #     bad_answers = self.pada(get_bad_samples(indices, top_50))
-        bad_answers = self.pada(random.sample(self.answers, len(good_answers)))
+        # def get_bad_samples(indices, top_50):
+        #     return [self.answers[random.choice(top_50[i])] for i in indices]
+
+        for i in range(1, nb_epoch + 1):
+            # sample from all answers to get bad answers
+            # if i % 2 == 0:
+            #     bad_answers = self.pada(random.sample(self.answers.values(), len(good_answers)))
+            # else:
+            #     bad_answers = self.pada(get_bad_samples(indices, top_50))
+            bad_answers = self.pada(random.sample(self.answers, len(good_answers)))
+
+            logger.info(f'Fitting epoch {i}')
+            hist = self.model.fit([questions, good_answers, bad_answers], epochs=1, batch_size=batch_size,
+                                  validation_split=validation_split, verbose=2)
+
+            if hist.history['val_loss'][0] < val_loss['loss']:
+                val_loss = {'loss': hist.history['val_loss'][0], 'epoch': i}
+            logger.info('%s -- Epoch %d ' % (self.get_time(), i) +
+                'Loss = %.4f, Validation Loss = %.4f ' % (hist.history['loss'][0], hist.history['val_loss'][0]) +
+                '(Best: Loss = %.4f, Epoch = %d)' % (val_loss['loss'], val_loss['epoch']))
+            # save plot val_loss, loss
+            report = ReportResult(hist.history, self.name)
+            # plot = report.generate_line_report()
+            # report.save_plot(plot)
+
+            # logger.info(f'saving loss, val_loss plot')
 
 
-        hist = self.model.fit([questions, good_answers, bad_answers], epochs=epochs, batch_size=batch_size,
-                              validation_split=validation_split, verbose=2)
-
-        # save plot val_loss, loss
-        report = ReportResult(hist.history, self.name)
-        plot = report.generate_line_report()
-        report.save_plot(plot)
-
-        logger.info(f'saving loss, val_loss plot')
-
-
-        # save_model_architecture(prediction_model, model_name=model_name)
-        self.save_epoch()
+            # save_model_architecture(prediction_model, model_name=model_name)
+            self.save_epoch()
 
         # save conf
         self.save_conf()
