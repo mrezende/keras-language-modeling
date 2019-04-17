@@ -13,14 +13,14 @@ class ArchiveResults:
     def save_training_results(self, conf_json):
         conf = Conf(conf_json)
         # move plots to archive folder
-        plot_folder = 'plots'
-        plot_filename = f'{conf.name()}_plot.png'
-        plot_file = os.path.join(plot_folder, plot_filename)
+        # plot_folder = 'plots'
+        # plot_filename = f'{conf.name()}_plot.png'
+        # plot_file = os.path.join(plot_folder, plot_filename)
 
-        os.makedirs(os.path.join(self.base_folder, plot_folder), exist_ok=True)
-        archive_plot_result_file = os.path.join(self.base_folder, plot_file)
+        # os.makedirs(os.path.join(self.base_folder, plot_folder), exist_ok=True)
+        # archive_plot_result_file = os.path.join(self.base_folder, plot_file)
 
-        self.move(plot_file, archive_plot_result_file)
+        # self.move(plot_file, archive_plot_result_file)
 
         # copy models to archive folder
         models_folder = 'models'
