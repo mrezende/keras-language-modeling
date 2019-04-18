@@ -221,13 +221,13 @@ class ConvolutionalLSTM(LanguageModel):
 
         # add embedding layers
         question_weights = np.load(self.config.initial_question_weights())
-        q_embedding = Embedding(input_dim=self.config.question_n_words(),
+        q_embedding = Embedding(input_dim=question_weights.shape[0],
                               output_dim=question_weights.shape[1],
                               weights=[question_weights])
         question_embedding = q_embedding(question)
 
         answer_weights = np.load(self.config.initial_answer_weights())
-        a_embedding = Embedding(input_dim=self.config.answer_n_words(),
+        a_embedding = Embedding(input_dim=answer_weights.shape[0],
                                 output_dim=answer_weights.shape[1],
                                 weights=[answer_weights])
         answer_embedding = a_embedding(answer)
