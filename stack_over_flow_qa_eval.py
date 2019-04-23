@@ -24,6 +24,8 @@ import threading
 from scipy.stats import rankdata
 import logging
 
+from sklearn.model_selection import StratifiedKFold
+
 random.seed(42)
 
 def clear_session():
@@ -49,6 +51,7 @@ class Evaluator:
         self.model.compile(optimizer)
 
         self.answers = self.load('answers.json') # self.load('generated')
+        self.data = self.load('sof_python_data_labeled.json')
         self._vocab = None
         self._reverse_vocab = None
         self._eval_sets = None
@@ -120,22 +123,35 @@ class Evaluator:
     def get_time(self):
         return strftime('%Y-%m-%d %H:%M:%S', gmtime())
 
-    def train(self):
+    def train_and_evaluate(self):
+        # cross validation
+
+        # Instantiate the cross validator
+        n_splits = self.params['n_splits']
+        skf = StratifiedKFold(n_splits=n_splits, shuffle=True)
+
+        X = self.data['question']
+        Y = self.data['good_answer']
+
+        # Loop through the indices the split() method returns
+        for index, (train, test) in enumerate(skf.split(X, Y)):
+            logger.info(f'Training on fold {index + 1} + /{n_splits}...')
+
+            self.train(X[train], Y[train])
+
+
+
+    def train(self, X, Y):
         batch_size = self.params['batch_size']
         validation_split = self.params['validation_split']
         nb_epoch = self.params['nb_epoch']
 
-        training_set = self.load('train.json')
+
         # top_50 = self.load('top_50')
 
-        questions = list()
-        good_answers = list()
-        indices = list()
+        questions = X
+        good_answers = Y
 
-        for j, q in enumerate(training_set):
-            questions += [q['question']] * len(q['answers'])
-            good_answers += [i for i in q['answers']]
-            indices += [j] * len(q['answers'])
         logger.info('Began training at %s on %d samples' % (self.get_time(), len(questions)))
 
         questions = self.padq(questions)
@@ -146,20 +162,13 @@ class Evaluator:
         # For this reason it is best to try several different initial guesses in order to ensure that
         # a global minimum has been obtained.
 
-        # def get_bad_samples(indices, top_50):
-        #     return [self.answers[random.choice(top_50[i])] for i in indices]
 
         val_loss = {'loss': 1., 'epoch': 0}
 
-        # def get_bad_samples(indices, top_50):
-        #     return [self.answers[random.choice(top_50[i])] for i in indices]
+
 
         for i in range(1, nb_epoch + 1):
-            # sample from all answers to get bad answers
-            # if i % 2 == 0:
-            #     bad_answers = self.pada(random.sample(self.answers.values(), len(good_answers)))
-            # else:
-            #     bad_answers = self.pada(get_bad_samples(indices, top_50))
+
             bad_answers = self.pada(random.sample(self.answers, len(good_answers)))
 
             logger.info(f'Fitting epoch {i}')
@@ -179,79 +188,57 @@ class Evaluator:
             # logger.info(f'saving loss, val_loss plot')
 
 
-            # save_model_architecture(prediction_model, model_name=model_name)
-            self.save_epoch()
-
         # save conf
         self.save_conf()
 
         clear_session()
 
-    ##### Evaluation #####
-
-    def prog_bar(self, so_far, total, n_bars=20):
-        n_complete = int(so_far * n_bars / total)
-        if n_complete >= n_bars - 1:
-            print('\r[' + '=' * n_bars + ']', end='', file=sys.stderr)
-        else:
-            s = '\r[' + '=' * (n_complete - 1) + '>' + '.' * (n_bars - n_complete) + ']'
-            print(s, end='', file=sys.stderr)
-
-    def eval_sets(self):
-        if self._eval_sets is None:
-            self._eval_sets = dict([(s, self.load(s)) for s in ['test.json']])
-        return self._eval_sets
-
-    def get_score(self, verbose=False):
+    def get_score(self, X, Y):
         top1_ls = []
         mrr_ls = []
-        for name, data in self.eval_sets().items():
-            print('----- %s -----' % name)
 
-            random.shuffle(data)
 
-            if 'n_eval' in self.params:
-                data = data[:self.params['n_eval']]
+        c_1, c_2 = 0, 0
 
-            c_1, c_2 = 0, 0
+        questions = X
+        good_answers = Y
 
-            for i, d in enumerate(data):
-                self.prog_bar(i, len(data))
+        for i, question in enumerate(questions):
+            bad_answers =
+            answers = good_answers[i] + d['bad']
+            answers = self.pada(answers)
+            question = self.padq([d['question']] * len(answers))
 
-                answers = d['good'] + d['bad']
-                answers = self.pada(answers)
-                question = self.padq([d['question']] * len(answers))
+            sims = self.model.predict([question, answers])
 
-                sims = self.model.predict([question, answers])
+            n_good = 1
+            max_r = np.argmax(sims)
+            max_n = np.argmax(sims[:n_good])
 
-                n_good = len(d['good'])
-                max_r = np.argmax(sims)
-                max_n = np.argmax(sims[:n_good])
+            r = rankdata(sims, method='max')
 
-                r = rankdata(sims, method='max')
+            #if verbose:
+            #    min_r = np.argmin(sims)
+            #    amin_r = self.answers[indices[min_r]]
+            #     amax_r = self.answers[indices[max_r]]
+            #     amax_n = self.answers[indices[max_n]]
+            #
+            #     print(' '.join(self.revert(d['question'])))
+            #     print('Predicted: ({}) '.format(sims[max_r]) + ' '.join(self.revert(amax_r)))
+            #     print('Expected: ({}) Rank = {} '.format(sims[max_n], r[max_n]) + ' '.join(self.revert(amax_n)))
+            #     print('Worst: ({})'.format(sims[min_r]) + ' '.join(self.revert(amin_r)))
 
-                #if verbose:
-                #    min_r = np.argmin(sims)
-                #    amin_r = self.answers[indices[min_r]]
-                #     amax_r = self.answers[indices[max_r]]
-                #     amax_n = self.answers[indices[max_n]]
-                #
-                #     print(' '.join(self.revert(d['question'])))
-                #     print('Predicted: ({}) '.format(sims[max_r]) + ' '.join(self.revert(amax_r)))
-                #     print('Expected: ({}) Rank = {} '.format(sims[max_n], r[max_n]) + ' '.join(self.revert(amax_n)))
-                #     print('Worst: ({})'.format(sims[min_r]) + ' '.join(self.revert(amin_r)))
+            c_1 += 1 if max_r == max_n else 0
+            c_2 += 1 / float(r[max_r] - r[max_n] + 1)
 
-                c_1 += 1 if max_r == max_n else 0
-                c_2 += 1 / float(r[max_r] - r[max_n] + 1)
+        top1 = c_1 / float(len(data))
+        mrr = c_2 / float(len(data))
 
-            top1 = c_1 / float(len(data))
-            mrr = c_2 / float(len(data))
 
-            del data
-            print('Top-1 Precision: %f' % top1)
-            print('MRR: %f' % mrr)
-            top1_ls.append(top1)
-            mrr_ls.append(mrr)
+        print('Top-1 Precision: %f' % top1)
+        print('MRR: %f' % mrr)
+        top1_ls.append(top1)
+        mrr_ls.append(mrr)
         self.top1_ls = top1_ls
         self.mrr_ls = mrr_ls
         return self.top1_ls, self.mrr_ls
@@ -286,47 +273,19 @@ if __name__ == '__main__':
     confs = json.load(open(conf_file, 'r'))
     from keras_models import EmbeddingModel, ConvolutionModel, ConvolutionalLSTM
 
-    if mode == 'train':
-        archive_results = ArchiveResults()
 
-        for conf in confs:
-            logger.info(f'Conf.json: {conf}')
-            evaluator = Evaluator(conf, model=ConvolutionalLSTM)
-            # train the model
-            evaluator.train()
 
-            # archive models, plots
+    for conf in confs:
+        logger.info(f'Conf.json: {conf}')
+        evaluator = Evaluator(conf, model=ConvolutionalLSTM)
+        # train and evaluate the model
+        evaluator.train_and_evaluate()
 
-            archive_results.save_training_results(conf)
 
-        archive_results.save_conf_list()
-        archive_results.save_conf_file(conf_file)
 
-        remove_plots()
 
-    elif mode == 'predict':
-        archive_results = ArchiveResults()
 
-        for conf in confs:
-            logger.info(f'Conf.json: {conf}')
-            evaluator = Evaluator(conf, model=ConvolutionalLSTM)
-            # evaluate mrr for a particular epoch
-            evaluator.load_epoch()
-            top1, mrr = evaluator.get_score(verbose=False)
-            logger.info(' - Top-1 Precision:')
-            logger.info('   - %.3f on test 1' % top1[0])
 
-            logger.info(' - MRR:')
-            logger.info('   - %.3f on test 1' % mrr[0])
-
-            #save score per conf
-            evaluator.save_score()
-
-            # archive models, conf file, score results
-
-            archive_results.save_predict_results(conf)
-
-        archive_results.save_conf_file(conf_file)
 
 
 
