@@ -139,12 +139,22 @@ class Evaluator:
         X = np.zeros(n_samples)
         Y = self.data
 
+        val_losses = []
+        top1s = []
+        mrrs = []
 
         # Loop through the indices the split() method returns
         for index, (train, test) in enumerate(skf.split(X, Y)):
             logger.info(f'Training on fold {index + 1} + /{n_splits}...')
 
-            self.train(Y[train])
+            val_loss = self.train(Y[train])
+            val_losses.append(val_loss)
+            logger.info(f'Val loss: {val_loss}')
+
+            top1, mrr = self.get_score(Y[test])
+            top1s.append(top1)
+            mrrs.append(mrr)
+            logger.info(f'Top-1 Precision: {top1}, MRR: {mrr}')
 
 
 
@@ -203,20 +213,13 @@ class Evaluator:
         self.save_conf()
 
         clear_session()
+        return val_loss
 
-    def get_score(self, X, Y):
-        top1_ls = []
-        mrr_ls = []
-
-
+    def get_score(self, Y):
         c_1, c_2 = 0, 0
 
-        questions = X
-        good_answers = Y
-
-        for i, question in enumerate(questions):
-            bad_answers =
-            answers = good_answers[i] + d['bad']
+        for i, d in enumerate(Y):
+            answers = d['good_answers'] + d['bad_answers']
             answers = self.pada(answers)
             question = self.padq([d['question']] * len(answers))
 
@@ -248,11 +251,8 @@ class Evaluator:
 
         print('Top-1 Precision: %f' % top1)
         print('MRR: %f' % mrr)
-        top1_ls.append(top1)
-        mrr_ls.append(mrr)
-        self.top1_ls = top1_ls
-        self.mrr_ls = mrr_ls
-        return self.top1_ls, self.mrr_ls
+
+        return top1, mrr
 
     def save_score(self):
         with open('results_conf.txt', 'a+') as append_file:
@@ -266,7 +266,6 @@ if __name__ == '__main__':
 
 
     parser = argparse.ArgumentParser(description='run question answer selection')
-    parser.add_argument('--mode', metavar='MODE', type=str, default="train", help='mode: train/predict/test')
     parser.add_argument('--conf_file', metavar='MODE', type=str, default="stack_over_flow_conf.json", help='conf json file: stack_over_flow_conf.json')
 
     args = parser.parse_args()
