@@ -130,18 +130,25 @@ class Evaluator:
         n_splits = self.params['n_splits']
         skf = StratifiedKFold(n_splits=n_splits, shuffle=True)
 
-        X = self.data['question']
-        Y = self.data['good_answer']
+        # https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.StratifiedKFold.html
+        # Note that providing y is sufficient to generate the splits
+        # and hence np.zeros(n_samples) may be used as a placeholder for X
+        # instead of actual training data.
+
+        n_samples = len(self.data)
+        X = np.zeros(n_samples)
+        Y = self.data
+
 
         # Loop through the indices the split() method returns
         for index, (train, test) in enumerate(skf.split(X, Y)):
             logger.info(f'Training on fold {index + 1} + /{n_splits}...')
 
-            self.train(X[train], Y[train])
+            self.train(Y[train])
 
 
 
-    def train(self, X, Y):
+    def train(self, Y):
         batch_size = self.params['batch_size']
         validation_split = self.params['validation_split']
         nb_epoch = self.params['nb_epoch']
@@ -149,8 +156,12 @@ class Evaluator:
 
         # top_50 = self.load('top_50')
 
-        questions = X
-        good_answers = Y
+        questions = list()
+        good_answers = list()
+
+        for j, q in enumerate(Y):
+            questions += [q['question']] * len(q['good_answers'])
+            good_answers += q['good_answers']
 
         logger.info('Began training at %s on %d samples' % (self.get_time(), len(questions)))
 
