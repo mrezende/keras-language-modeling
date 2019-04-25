@@ -150,6 +150,7 @@ class Evaluator:
             val_losses.append(val_loss)
             logger.info(f'Val loss: {val_loss}')
 
+            self.load_epoch()
             top1, mrr = self.get_score(X[test])
             top1s.append(top1)
             mrrs.append(mrr)
@@ -200,6 +201,9 @@ class Evaluator:
             logger.info('%s -- Epoch %d ' % (self.get_time(), i) +
                 'Loss = %.4f, Validation Loss = %.4f ' % (hist.history['loss'][0], hist.history['val_loss'][0]) +
                 '(Best: Loss = %.4f, Epoch = %d)' % (val_loss['loss'], val_loss['epoch']))
+
+            # saving weights
+            self.save_epoch()
             # save plot val_loss, loss
             report = ReportResult(hist.history, self.name)
             # plot = report.generate_line_report()
