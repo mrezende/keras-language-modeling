@@ -88,11 +88,12 @@ class Evaluator:
     def save_epoch(self):
         if not os.path.exists('models/'):
             os.makedirs('models/')
-
+        logger.info(f'Saving weights: models/weights_epoch_{self.name}.h5')
         self.model.save_weights(f'models/weights_epoch_{self.name}.h5', overwrite=True)
 
     def load_epoch(self):
         assert os.path.exists(f'models/weights_epoch_{self.name}.h5'), f'Weights at epoch {self.name} not found'
+        logger.info(f'Loading weights: models/weights_epoch_{self.name}.h5')
         self.model.load_weights(f'models/weights_epoch_{self.name}.h5')
 
     ##### Converting / reverting #####
