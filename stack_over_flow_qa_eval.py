@@ -24,7 +24,7 @@ import threading
 from scipy.stats import rankdata
 import logging
 
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import KFold
 
 random.seed(42)
 
@@ -128,37 +128,35 @@ class Evaluator:
 
         # Instantiate the cross validator
         n_splits = self.params['n_splits']
-        skf = StratifiedKFold(n_splits=n_splits, shuffle=True)
+        kf = KFold(n_splits=n_splits, shuffle=True)
 
         # https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.StratifiedKFold.html
         # Note that providing y is sufficient to generate the splits
         # and hence np.zeros(n_samples) may be used as a placeholder for X
         # instead of actual training data.
 
-        n_samples = len(self.data)
-        X = np.zeros(n_samples)
-        Y = self.data
+        X = np.array(self.data)
 
         val_losses = []
         top1s = []
         mrrs = []
 
         # Loop through the indices the split() method returns
-        for index, (train, test) in enumerate(skf.split(X, Y)):
+        for index, (train, test) in enumerate(kf.split(X)):
             logger.info(f'Training on fold {index + 1} + /{n_splits}...')
 
-            val_loss = self.train(Y[train])
+            val_loss = self.train(X[train])
             val_losses.append(val_loss)
             logger.info(f'Val loss: {val_loss}')
 
-            top1, mrr = self.get_score(Y[test])
+            top1, mrr = self.get_score(X[test])
             top1s.append(top1)
             mrrs.append(mrr)
             logger.info(f'Top-1 Precision: {top1}, MRR: {mrr}')
 
 
 
-    def train(self, Y):
+    def train(self, X):
         batch_size = self.params['batch_size']
         validation_split = self.params['validation_split']
         nb_epoch = self.params['nb_epoch']
@@ -169,7 +167,7 @@ class Evaluator:
         questions = list()
         good_answers = list()
 
-        for j, q in enumerate(Y):
+        for j, q in enumerate(X):
             questions += [q['question']] * len(q['good_answers'])
             good_answers += q['good_answers']
 
@@ -215,10 +213,10 @@ class Evaluator:
         clear_session()
         return val_loss
 
-    def get_score(self, Y):
+    def get_score(self, X):
         c_1, c_2 = 0, 0
 
-        for i, d in enumerate(Y):
+        for i, d in enumerate(X):
             answers = d['good_answers'] + d['bad_answers']
             answers = self.pada(answers)
             question = self.padq([d['question']] * len(answers))
@@ -264,7 +262,7 @@ class Evaluator:
 
 if __name__ == '__main__':
 
-
+    sys.argv = ['--conf_file stack_over_flow_conf.json']
     parser = argparse.ArgumentParser(description='run question answer selection')
     parser.add_argument('--conf_file', metavar='MODE', type=str, default="stack_over_flow_conf.json", help='conf json file: stack_over_flow_conf.json')
 
@@ -275,8 +273,6 @@ if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s: %(levelname)s: %(message)s')
     logging.root.setLevel(level=logging.INFO)
     logger.info('running %s' % ' '.join(sys.argv))
-
-    mode = args.mode
 
     conf_file = args.conf_file
 
