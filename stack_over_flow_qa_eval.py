@@ -24,6 +24,7 @@ import threading
 from scipy.stats import rankdata
 import logging
 import numpy as np
+import tensorflow as tf
 
 from sklearn.model_selection import KFold
 
@@ -151,6 +152,7 @@ class Evaluator:
             val_losses.append(val_loss)
             logger.info(f'Val loss: {val_loss}')
 
+            tf.reset_default_graph()
             self.load_epoch()
             top1, mrr = self.get_score(X[test])
             top1s.append(top1)
