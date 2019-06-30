@@ -26,10 +26,6 @@ import logging
 import numpy as np
 import tensorflow as tf
 
-from sklearn.model_selection import KFold
-
-random.seed(42)
-
 def clear_session():
     K.clear_session()
 
@@ -126,17 +122,8 @@ class Evaluator:
     def get_time(self):
         return strftime('%Y-%m-%d %H:%M:%S', gmtime())
 
-    def train_and_evaluate(self):
-        # cross validation
+    def train_and_evaluate(self, mode='train'):
 
-        # Instantiate the cross validator
-        n_splits = self.params['n_splits']
-        kf = KFold(n_splits=n_splits, shuffle=True)
-
-        # https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.StratifiedKFold.html
-        # Note that providing y is sufficient to generate the splits
-        # and hence np.zeros(n_samples) may be used as a placeholder for X
-        # instead of actual training data.
 
         X = np.array(self.data)
 
@@ -144,17 +131,20 @@ class Evaluator:
         top1s = []
         mrrs = []
 
-        # Loop through the indices the split() method returns
-        for index, (train, test) in enumerate(kf.split(X)):
-            logger.info(f'Training on fold {index + 1} + /{n_splits}...')
+        test_size = self.params['test_size']
 
-            val_loss = self.train(X[train])
+        X_train, X_test = train_test_split(
+        X, test_size = test_size, random_state = 42)
+
+        if mode == 'train':
+            val_loss = self.train(X_train)
             val_losses.append(val_loss)
             logger.info(f'Val loss: {val_loss}')
 
+        elif mode == 'evaluate':
             tf.reset_default_graph()
             self.load_epoch()
-            top1, mrr = self.get_score(X[test])
+            top1, mrr = self.get_score(X_test)
             top1s.append(top1)
             mrrs.append(mrr)
             logger.info(f'Top-1 Precision: {top1}, MRR: {mrr}')
@@ -272,7 +262,8 @@ if __name__ == '__main__':
 
     sys.argv = ['--conf_file stack_over_flow_conf.json']
     parser = argparse.ArgumentParser(description='run question answer selection')
-    parser.add_argument('--conf_file', metavar='MODE', type=str, default="stack_over_flow_conf.json", help='conf json file: stack_over_flow_conf.json')
+    parser.add_argument('--conf_file', metavar='CONF_FILE', type=str, default="stack_over_flow_conf.json", help='conf json file: stack_over_flow_conf.json')
+    parser.add_argument('--mode', metavar='MODE', type=str, default="train", help='mode: train|evaluate')
 
     args = parser.parse_args()
 
@@ -283,6 +274,7 @@ if __name__ == '__main__':
     logger.info('running %s' % ' '.join(sys.argv))
 
     conf_file = args.conf_file
+    mode = args.mode
 
     confs = json.load(open(conf_file, 'r'))
     from keras_models import EmbeddingModel, ConvolutionModel, ConvolutionalLSTM
@@ -293,7 +285,7 @@ if __name__ == '__main__':
         logger.info(f'Conf.json: {conf}')
         evaluator = Evaluator(conf, model=ConvolutionalLSTM)
         # train and evaluate the model
-        evaluator.train_and_evaluate()
+        evaluator.train_and_evaluate(mode)
 
 
 
