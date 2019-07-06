@@ -19,6 +19,7 @@ from keras.preprocessing.text import Tokenizer
 from keras import backend as K
 from keras.callbacks import EarlyStopping
 from keras.models import model_from_json
+from sklearn.model_selection import train_test_split
 
 import threading
 from scipy.stats import rankdata
@@ -177,8 +178,8 @@ class Evaluator:
         # a global minimum has been obtained.
 
 
-        val_loss = {'loss': 1., 'epoch': 0}
-
+        best_val_loss = {'loss': 1., 'epoch': 0}
+        val_losses = []
 
 
         for i in range(1, nb_epoch + 1):
@@ -189,20 +190,27 @@ class Evaluator:
             hist = self.model.fit([questions, good_answers, bad_answers], epochs=1, batch_size=batch_size,
                                   validation_split=validation_split, verbose=2)
 
-            if hist.history['val_loss'][0] < val_loss['loss']:
-                val_loss = {'loss': hist.history['val_loss'][0], 'epoch': i}
-            logger.info('%s -- Epoch %d ' % (self.get_time(), i) +
-                'Loss = %.4f, Validation Loss = %.4f ' % (hist.history['loss'][0], hist.history['val_loss'][0]) +
-                '(Best: Loss = %.4f, Epoch = %d)' % (val_loss['loss'], val_loss['epoch']))
+            val_loss = hist.history['val_loss'][0]
+            loss = hist.history['loss'][0]
 
-            # saving weights
-            self.save_epoch()
-            # save plot val_loss, loss
-            report = ReportResult(hist.history, self.name)
-            # plot = report.generate_line_report()
-            # report.save_plot(plot)
+            val_losses.append(val_loss)
 
-            # logger.info(f'saving loss, val_loss plot')
+            if val_loss < best_val_loss['loss']:
+                best_val_loss = {'loss': val_loss, 'epoch': i}
+
+                logger.info('%s -- Epoch %d ' % (self.get_time(), i) +
+                    'Loss = %.4f, Validation Loss = %.4f ' % (loss, val_loss) +
+                    '(Best: Loss = %.4f, Epoch = %d)' % (best_val_loss['loss'], best_val_loss['epoch']))
+
+                # saving weights
+                self.save_epoch()
+
+        # save plot val_loss, loss
+        report = ReportResult(val_losses, self.name)
+        plot = report.generate_line_report()
+        report.save_plot(plot)
+
+        logger.info(f'saving loss, val_loss plot')
 
 
         # save conf
