@@ -206,9 +206,9 @@ class Evaluator:
                 self.save_epoch()
 
         # save plot val_loss, loss
-        report = ReportResult(hist_losses, self.name)
+        report = ReportResult(hist_losses, [i in range(1, nb_epoch + 1)], self.name)
         plot = report.generate_line_report()
-        report.save_plot(plot)
+        report.save_plot()
 
         logger.info(f'saving loss, val_loss plot')
 
