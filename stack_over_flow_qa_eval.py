@@ -179,8 +179,7 @@ class Evaluator:
 
 
         best_val_loss = {'loss': 1., 'epoch': 0}
-        val_losses = []
-
+        hist_losses = {'val_loss': [], 'loss': []}
 
         for i in range(1, nb_epoch + 1):
 
@@ -192,21 +191,22 @@ class Evaluator:
 
             val_loss = hist.history['val_loss'][0]
             loss = hist.history['loss'][0]
-
-            val_losses.append(val_loss)
+            hist_losses['val_loss'].append(val_loss)
+            hist_losses['loss'].append(loss)
 
             if val_loss < best_val_loss['loss']:
+                print(hist.history)
                 best_val_loss = {'loss': val_loss, 'epoch': i}
 
                 logger.info('%s -- Epoch %d ' % (self.get_time(), i) +
-                    'Loss = %.4f, Validation Loss = %.4f ' % (loss, val_loss) +
-                    '(Best: Loss = %.4f, Epoch = %d)' % (best_val_loss['loss'], best_val_loss['epoch']))
+                            'Loss = %.4f, Validation Loss = %.4f ' % (loss, val_loss) +
+                            '(Best: Loss = %.4f, Epoch = %d)' % (best_val_loss['loss'], best_val_loss['epoch']))
 
                 # saving weights
                 self.save_epoch()
 
         # save plot val_loss, loss
-        report = ReportResult(val_losses, self.name)
+        report = ReportResult(hist_losses, self.name)
         plot = report.generate_line_report()
         report.save_plot(plot)
 
