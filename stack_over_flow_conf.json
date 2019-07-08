@@ -3,8 +3,6 @@
 
 
   {
-        "question_n_words": 2800,
-        "answer_n_words": 2800,
         "question_len": 150,
         "answer_len": 150,
         "margin": 0.009,

@@ -38,15 +38,6 @@ class Conf:
     def initial_answer_weights(self):
         return self.conf['initial_answer_weights']
 
-    def n_words(self):
-        return self.conf['n_words']
-
-    def question_n_words(self):
-        return self.conf['question_n_words']
-
-    def answer_n_words(self):
-        return self.conf['answer_n_words']
-
     def conf_json_and_name(self):
         conf_json = json.dumps(self.conf)
         name = self.name()
