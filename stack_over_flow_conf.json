@@ -6,7 +6,8 @@
         "question_len": 150,
         "answer_len": 150,
         "margin": 0.009,
-        "initial_embed_weights": "word2vec_code_100_dim.embeddings",
+        "initial_question_weights": "word2vec_question_100_dim.embeddings",
+        "initial_answer_weights": "word2vec_code_100_dim.embeddings",
 
 
         "training": {

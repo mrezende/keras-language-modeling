@@ -251,8 +251,8 @@ class Evaluator:
             c_1 += 1 if max_r == max_n else 0
             c_2 += 1 / float(r[max_r] - r[max_n] + 1)
 
-        top1 = c_1 / float(len(data))
-        mrr = c_2 / float(len(data))
+        top1 = c_1 / float(len(X))
+        mrr = c_2 / float(len(X))
 
 
         print('Top-1 Precision: %f' % top1)
