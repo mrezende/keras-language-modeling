@@ -147,7 +147,7 @@ class Evaluator:
 
         elif mode == 'evaluate':
             self.load_epoch()
-            top1, mrr = self.get_score(X_test)
+            top1, mrr = self.get_score(X_test, verbose=True)
             top1s.append(top1)
             mrrs.append(mrr)
             logger.info(f'Top-1 Precision: {top1}, MRR: {mrr}')
@@ -221,9 +221,10 @@ class Evaluator:
         clear_session()
         return val_loss
 
-    def get_score(self, X):
+    def get_score(self, X, verbose=False):
         c_1, c_2 = 0, 0
 
+        logger.info(f'len X: {len(X)}')
         for i, d in enumerate(X):
             answers = d['good_answers'] + d['bad_answers']
             answers = self.pada(answers)
@@ -231,22 +232,28 @@ class Evaluator:
 
             sims = self.model.predict([question, answers])
 
-            n_good = 1
+            logger.info(f'sims: {sims}')
+
+            n_good = len(d['good_answers'])
             max_r = np.argmax(sims)
             max_n = np.argmax(sims[:n_good])
 
+            logger.info(f'n_good: {n_good}, max_r: {max_r}, max_n: {max_n}')
+
             r = rankdata(sims, method='max')
 
-            #if verbose:
-            #    min_r = np.argmin(sims)
-            #    amin_r = self.answers[indices[min_r]]
-            #     amax_r = self.answers[indices[max_r]]
-            #     amax_n = self.answers[indices[max_n]]
-            #
-            #     print(' '.join(self.revert(d['question'])))
-            #     print('Predicted: ({}) '.format(sims[max_r]) + ' '.join(self.revert(amax_r)))
-            #     print('Expected: ({}) Rank = {} '.format(sims[max_n], r[max_n]) + ' '.join(self.revert(amax_n)))
-            #     print('Worst: ({})'.format(sims[min_r]) + ' '.join(self.revert(amin_r)))
+            logger.info(f'rankdata r: {r}')
+
+            if verbose:
+                min_r = np.argmin(sims)
+                amin_r = answers[min_r]
+                amax_r = answers[max_r]
+                amax_n = answers[max_n]
+
+                print(' '.join(self.revert(d['question'])))
+                print('Predicted: ({}) '.format(sims[max_r]) + ' '.join(self.revert(amax_r)))
+                print('Expected: ({}) Rank = {} '.format(sims[max_n], r[max_n]) + ' '.join(self.revert(amax_n)))
+                print('Worst: ({})'.format(sims[min_r]) + ' '.join(self.revert(amin_r)))
 
             c_1 += 1 if max_r == max_n else 0
             c_2 += 1 / float(r[max_r] - r[max_n] + 1)
