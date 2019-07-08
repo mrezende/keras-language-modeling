@@ -146,7 +146,6 @@ class Evaluator:
             logger.info(f'Val loss: {val_loss}')
 
         elif mode == 'evaluate':
-            tf.reset_default_graph()
             self.load_epoch()
             top1, mrr = self.get_score(X_test)
             top1s.append(top1)
