@@ -34,7 +34,7 @@ def remove_plots():
     shutil.rmtree('plots')
 
 class Evaluator:
-    def __init__(self, conf_json, model, optimizer=None):
+    def __init__(self, conf_json, model, optimizer=None, name=None):
         try:
             data_path = os.environ['STACK_OVER_FLOW_QA']
         except KeyError:
@@ -42,7 +42,10 @@ class Evaluator:
             sys.exit(1)
         self.conf = Conf(conf_json)
         self.model = model(self.conf)
-        self.name = self.conf.name()
+        if name is None:
+            self.name = self.conf.name()
+        else:
+            self.name = name
 
         self.path = data_path
         self.params = self.conf.training_params()
@@ -270,6 +273,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='run question answer selection')
     parser.add_argument('--conf_file', metavar='CONF_FILE', type=str, default="stack_over_flow_conf.json", help='conf json file: stack_over_flow_conf.json')
     parser.add_argument('--mode', metavar='MODE', type=str, default="train", help='mode: train|evaluate')
+    parser.add_argument('--conf_name', metavar='CONF_NAME', type=str, default="837643", help='conf_name: part of name of weights file')
 
     args = parser.parse_args()
 
@@ -281,6 +285,7 @@ if __name__ == '__main__':
 
     conf_file = args.conf_file
     mode = args.mode
+    conf_name = args.conf_name
 
     confs = json.load(open(conf_file, 'r'))
     from keras_models import EmbeddingModel, ConvolutionModel, ConvolutionalLSTM
@@ -289,7 +294,7 @@ if __name__ == '__main__':
 
     for conf in confs:
         logger.info(f'Conf.json: {conf}')
-        evaluator = Evaluator(conf, model=ConvolutionalLSTM)
+        evaluator = Evaluator(conf, model=ConvolutionalLSTM, name=conf_name)
         # train and evaluate the model
         evaluator.train_and_evaluate(mode)
 
