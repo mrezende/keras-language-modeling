@@ -267,8 +267,6 @@ class Evaluator:
 
 
 if __name__ == '__main__':
-
-    sys.argv = ['--conf_file stack_over_flow_conf.json']
     parser = argparse.ArgumentParser(description='run question answer selection')
     parser.add_argument('--conf_file', metavar='CONF_FILE', type=str, default="stack_over_flow_conf.json", help='conf json file: stack_over_flow_conf.json')
     parser.add_argument('--mode', metavar='MODE', type=str, default="train", help='mode: train|evaluate')
