@@ -1,7 +1,5 @@
 # data / models (also potentially very large)
 data/
-models/
-models
 treq_eval*
 
 # pyc files aren't necessary
@@ -11,7 +9,6 @@ treq_eval*
 .idea
 
 # large "data" files
-*.h5
 *.pkl
 *.txt
 *.dict

@@ -244,10 +244,12 @@ class Evaluator:
                 amax_r = answers[max_r]
                 amax_n = answers[max_n]
 
+                logger.info(' ----- begin question ----- ')
                 logger.info(' '.join(self.revert(d['question'])))
                 logger.info('Predicted: ({}) '.format(sims[max_r]) + ' '.join(self.revert(amax_r)))
                 logger.info('Expected: ({}) Rank = {} '.format(sims[max_n], r[max_n]) + ' '.join(self.revert(amax_n)))
                 logger.info('Worst: ({})'.format(sims[min_r]) + ' '.join(self.revert(amin_r)))
+                logger.info(' ----- end question ----- ')
 
             c_1 += 1 if max_r == max_n else 0
             c_2 += 1 / float(r[max_r] - r[max_n] + 1)
