@@ -189,7 +189,7 @@ class Evaluator:
 
             logger.info(f'Fitting epoch {i}')
             hist = self.model.fit([questions, good_answers, bad_answers], epochs=1, batch_size=batch_size,
-                                  validation_split=validation_split, verbose=2)
+                                  validation_split=validation_split, verbose=1)
 
             val_loss = hist.history['val_loss'][0]
             loss = hist.history['loss'][0]
