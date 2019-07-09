@@ -232,17 +232,11 @@ class Evaluator:
 
             sims = self.model.predict([question, answers])
 
-            logger.info(f'sims: {sims}')
-
             n_good = len(d['good_answers'])
             max_r = np.argmax(sims)
             max_n = np.argmax(sims[:n_good])
 
-            logger.info(f'n_good: {n_good}, max_r: {max_r}, max_n: {max_n}')
-
             r = rankdata(sims, method='max')
-
-            logger.info(f'rankdata r: {r}')
 
             if verbose:
                 min_r = np.argmin(sims)
@@ -250,10 +244,10 @@ class Evaluator:
                 amax_r = answers[max_r]
                 amax_n = answers[max_n]
 
-                print(' '.join(self.revert(d['question'])))
-                print('Predicted: ({}) '.format(sims[max_r]) + ' '.join(self.revert(amax_r)))
-                print('Expected: ({}) Rank = {} '.format(sims[max_n], r[max_n]) + ' '.join(self.revert(amax_n)))
-                print('Worst: ({})'.format(sims[min_r]) + ' '.join(self.revert(amin_r)))
+                logger.info(' '.join(self.revert(d['question'])))
+                logger.info('Predicted: ({}) '.format(sims[max_r]) + ' '.join(self.revert(amax_r)))
+                logger.info('Expected: ({}) Rank = {} '.format(sims[max_n], r[max_n]) + ' '.join(self.revert(amax_n)))
+                logger.info('Worst: ({})'.format(sims[min_r]) + ' '.join(self.revert(amin_r)))
 
             c_1 += 1 if max_r == max_n else 0
             c_2 += 1 / float(r[max_r] - r[max_n] + 1)
