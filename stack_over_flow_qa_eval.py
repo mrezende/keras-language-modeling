@@ -44,7 +44,9 @@ class Evaluator:
         self.conf = Conf(conf_json)
         self.model = model(self.conf)
         if name is None:
-            self.name = self.conf.name() + '_' + self.model.__name__
+            self.name = self.conf.name() + '_' + model.__name__
+            logger.info(f'Initializing Evaluator ...')
+            logger.info(f'Name: {self.name}')
         else:
             self.name = name
 
