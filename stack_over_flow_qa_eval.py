@@ -203,9 +203,8 @@ class Evaluator:
             if mrr > best_top1_mrr['mrr']:
                 best_top1_mrr['top1'] = top1
                 best_top1_mrr['mrr'] = mrr
-                logger.info('%s -- Epoch %d ' % (self.get_time(), i) +
-                            'Loss = %.4f, Validation Loss = %.4f ' % (loss, val_loss) +
-                            '(Best: TOP1 = %.4f, MRR = %d)' % (best_top1_mrr['top1'], best_top1_mrr['mrr']))
+                logger.info(f'Epoch {i} Loss = {loss}, Validation Loss = {val_loss} ' +
+                            f'(Best: TOP1 = {top1}, MRR = {mrr})')
 
                 # saving weights
                 self.save_epoch()
@@ -230,12 +229,13 @@ class Evaluator:
         clear_session()
         return val_loss
 
-    def get_score(self, X, verbose=False):
+    def get_score(self, X, verbose=False, shuffle=False):
         c_1, c_2 = 0, 0
-
+        random_bad_answers = random.sample(self.answers, 49)
         logger.info(f'len X: {len(X)}')
         for i, d in enumerate(X):
-            answers = d['good_answers'] + d['bad_answers']
+            bad_answers = d['bad_answers'] if shuffle is False else random_bad_answers
+            answers = d['good_answers'] + bad_answers
             answers = self.pada(answers)
             question = self.padq([d['question']] * len(answers))
 
