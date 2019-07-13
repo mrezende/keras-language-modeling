@@ -178,7 +178,7 @@ class Evaluator:
 
 
 
-        best_top1_mrr = {'mrr': 0, 'top1': 0}
+        best_top1_mrr = {'top1': 0, 'mrr': 0}
         hist_losses = {'val_loss': [], 'loss': []}
 
         for i in range(1, nb_epoch + 1):
@@ -201,9 +201,11 @@ class Evaluator:
             top1, mrr = self.evaluate(self.dev_data, 'aux')
 
             if mrr > best_top1_mrr['mrr']:
+                best_top1_mrr['top1'] = top1
+                best_top1_mrr['mrr'] = mrr
                 logger.info('%s -- Epoch %d ' % (self.get_time(), i) +
                             'Loss = %.4f, Validation Loss = %.4f ' % (loss, val_loss) +
-                            '(Best: MRR = %.4f, TOP1 = %d)' % (best_top1_mrr['mrr'], best_top1_mrr['top1']))
+                            '(Best: TOP1 = %.4f, MRR = %d)' % (best_top1_mrr['top1'], best_top1_mrr['mrr']))
 
                 # saving weights
                 self.save_epoch()
