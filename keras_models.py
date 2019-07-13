@@ -206,9 +206,9 @@ class ConvolutionModel(LanguageModel):
                        activation='tanh',
                        padding='same') for kernel_size in [2, 3, 5, 7]]
         # question_cnn = merge([cnn(question_embedding) for cnn in cnns], mode='concat')
-        question_cnn = concatenate([cnn(question_hl) for cnn in cnns], axis=-1)
+        question_cnn = concatenate([cnn(question_hl) for cnn in cnns])
         # answer_cnn = merge([cnn(answer_embedding) for cnn in cnns], mode='concat')
-        answer_cnn = concatenate([cnn(answer_hl) for cnn in cnns], axis=-1)
+        answer_cnn = concatenate([cnn(answer_hl) for cnn in cnns])
 
         # maxpooling
         maxpool = Lambda(lambda x: K.max(x, axis=1, keepdims=False), output_shape=lambda x: (x[0], x[2]))
@@ -259,9 +259,9 @@ class ConvolutionalLSTM(LanguageModel):
                        activation='tanh',
                        padding='same') for kernel_size in [1, 2, 3, 5]]
         # question_cnn = merge([cnn(question_pool) for cnn in cnns], mode='concat')
-        question_cnn = concatenate([cnn(question_pool) for cnn in cnns], axis=-1)
+        question_cnn = concatenate([cnn(question_pool) for cnn in cnns])
         # answer_cnn = merge([cnn(answer_pool) for cnn in cnns], mode='concat')
-        answer_cnn = concatenate([cnn(answer_pool) for cnn in cnns], axis=-1)
+        answer_cnn = concatenate([cnn(answer_pool) for cnn in cnns])
 
         maxpool = Lambda(lambda x: K.max(x, axis=1, keepdims=False), output_shape=lambda x: (x[0], x[2]))
         maxpool.supports_masking = True
@@ -290,15 +290,16 @@ class AttentionModel(LanguageModel):
         answer_embedding = a_embedding(answer)
 
         # question rnn part
-        f_rnn = LSTM(141, return_sequences=True, consume_less='mem')
-        b_rnn = LSTM(141, return_sequences=True, consume_less='mem', go_backwards=True)
+        f_rnn = LSTM(141, return_sequences=True, implementation=1)
+        b_rnn = LSTM(141, return_sequences=True, implementation=1, go_backwards=True)
         question_f_rnn = f_rnn(question_embedding)
         question_b_rnn = b_rnn(question_embedding)
 
         # maxpooling
         maxpool = Lambda(lambda x: K.max(x, axis=1, keepdims=False), output_shape=lambda x: (x[0], x[2]))
         maxpool.supports_masking = True
-        question_pool = merge([maxpool(question_f_rnn), maxpool(question_b_rnn)], mode='concat', concat_axis=-1)
+        # question_pool = merge([maxpool(question_f_rnn), maxpool(question_b_rnn)], mode='concat', concat_axis=-1)
+        question_pool = concatenate([maxpool(question_f_rnn), maxpool(question_b_rnn)])
 
         # answer rnn part
         from attention_lstm import AttentionLSTMWrapper
@@ -307,6 +308,9 @@ class AttentionModel(LanguageModel):
 
         answer_f_rnn = f_rnn(answer_embedding)
         answer_b_rnn = b_rnn(answer_embedding)
-        answer_pool = merge([maxpool(answer_f_rnn), maxpool(answer_b_rnn)], mode='concat', concat_axis=-1)
+        #answer_pool = merge([maxpool(answer_f_rnn), maxpool(answer_b_rnn)], mode='concat', concat_axis=-1)
+        answer_pool = concatenate([maxpool(answer_f_rnn), maxpool(answer_b_rnn)])
+
+
 
         return question_pool, answer_pool
