@@ -247,7 +247,7 @@ class ConvolutionalLSTM(LanguageModel):
 
         # cnn
         cnns = [Conv1D(kernel_size=kernel_size,
-                       filters=500,
+                       filters=100,
                        activation='tanh',
                        padding='same') for kernel_size in [1, 2, 3, 5]]
         # question_cnn = merge([cnn(question_pool) for cnn in cnns], mode='concat')
