@@ -149,7 +149,10 @@ class Evaluator:
                 results['mrr'].append(mrr)
                 logger.info(f'Iteration: {i}: Top-1 Precision {top1}, MRR {mrr}')
             df = pd.DataFrame(results)
-            df.describe()
+            top1_desc = df.describe()['top1']
+            mrr_desc = df.describe()['mrr']
+            logger.info(f'Top1 Description: {top1_desc}')
+            logger.info(f'MRR Description: {mrr_desc}')
 
 
     def evaluate(self, X = None, name = None, shuffle=False):
@@ -291,7 +294,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='run question answer selection')
     parser.add_argument('--conf_file', metavar='CONF_FILE', type=str, default="stack_over_flow_conf.json", help='conf json file: stack_over_flow_conf.json')
     parser.add_argument('--mode', metavar='MODE', type=str, default="train", help='mode: train|evaluate')
-    parser.add_argument('--conf_name', metavar='CONF_NAME', type=str, default="837643", help='conf_name: part of name of weights file')
+    parser.add_argument('--conf_name', metavar='CONF_NAME', type=str, default=None, help='conf_name: part of name of weights file')
 
     args = parser.parse_args()
 

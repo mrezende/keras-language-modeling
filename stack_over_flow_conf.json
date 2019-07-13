@@ -11,11 +11,11 @@
 
 
         "training": {
-            "batch_size": 128,
-            "nb_epoch": 10,
-            "validation_split": 0.2,
+            "batch_size": 256,
+            "nb_epoch": 80,
+            "validation_split": 0.3,
             "optimizer": "adam",
-            "test_size": 0.95
+            "test_size": 0.40
         },
 
         "similarity": {
