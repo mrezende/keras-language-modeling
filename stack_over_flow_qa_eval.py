@@ -44,7 +44,7 @@ class Evaluator:
         self.conf = Conf(conf_json)
         self.model = model(self.conf)
         if name is None:
-            self.name = self.conf.name()
+            self.name = self.conf.name() + '_' + self.model.__name__
         else:
             self.name = name
 
@@ -295,6 +295,8 @@ if __name__ == '__main__':
     parser.add_argument('--conf_file', metavar='CONF_FILE', type=str, default="stack_over_flow_conf.json", help='conf json file: stack_over_flow_conf.json')
     parser.add_argument('--mode', metavar='MODE', type=str, default="train", help='mode: train|evaluate')
     parser.add_argument('--conf_name', metavar='CONF_NAME', type=str, default=None, help='conf_name: part of name of weights file')
+    parser.add_argument('--model', metavar='MODEL', type=str, default='cnn-lstm',
+                        help='model name: embedding|cnn|cnn-lstm|rnn-attention')
 
     args = parser.parse_args()
 
@@ -307,17 +309,31 @@ if __name__ == '__main__':
     conf_file = args.conf_file
     mode = args.mode
     conf_name = args.conf_name
+    model = args.model
 
     confs = json.load(open(conf_file, 'r'))
-    from keras_models import EmbeddingModel, ConvolutionModel, ConvolutionalLSTM
+    from keras_models import EmbeddingModel, ConvolutionModel, ConvolutionalLSTM, AttentionModel
 
 
 
     for conf in confs:
         logger.info(f'Conf.json: {conf}')
-        evaluator = Evaluator(conf, model=ConvolutionalLSTM, name=conf_name)
+        evaluator = None
+        if model == 'cnn-lstm':
+            evaluator = Evaluator(conf, model=ConvolutionalLSTM, name=conf_name)
+        elif model == 'embedding':
+            evaluator = Evaluator(conf, model=EmbeddingModel, name=conf_name)
+        elif model == 'cnn':
+            evaluator = Evaluator(conf, model=ConvolutionModel, name=conf_name)
+        elif model == 'rnn-attention':
+            evaluator = Evaluator(conf, model=AttentionModel, name=conf_name)
+
         # train and evaluate the model
-        evaluator.train_and_evaluate(mode)
+        if evaluator is not None:
+            evaluator.train_and_evaluate(mode)
+        else:
+            parser.print_help()
+            sys.exit()
 
 
 

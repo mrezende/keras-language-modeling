@@ -154,14 +154,17 @@ class EmbeddingModel(LanguageModel):
         answer = self.get_answer()
 
         # add embedding layers
-        weights = np.load(self.config.initial_embed_weights())
-        embedding = Embedding(input_dim=self.config.n_words(),
-                              output_dim=weights.shape[1],
-                              mask_zero=True,
-                              # dropout=0.2,
-                              weights=[weights])
-        question_embedding = embedding(question)
-        answer_embedding = embedding(answer)
+        question_weights = np.load(self.config.initial_question_weights())
+        q_embedding = Embedding(input_dim=question_weights.shape[0],
+                                output_dim=question_weights.shape[1],
+                                weights=[question_weights])
+        question_embedding = q_embedding(question)
+
+        answer_weights = np.load(self.config.initial_answer_weights())
+        a_embedding = Embedding(input_dim=answer_weights.shape[0],
+                                output_dim=answer_weights.shape[1],
+                                weights=[answer_weights])
+        answer_embedding = a_embedding(answer)
 
         # maxpooling
         maxpool = Lambda(lambda x: K.max(x, axis=1, keepdims=False), output_shape=lambda x: (x[0], x[2]))
@@ -180,12 +183,17 @@ class ConvolutionModel(LanguageModel):
         answer = self.get_answer()
 
         # add embedding layers
-        weights = np.load(self.config.initial_embed_weights())
-        embedding = Embedding(input_dim=self.config.n_words(),
-                              output_dim=weights.shape[1],
-                              weights=[weights])
-        question_embedding = embedding(question)
-        answer_embedding = embedding(answer)
+        question_weights = np.load(self.config.initial_question_weights())
+        q_embedding = Embedding(input_dim=question_weights.shape[0],
+                                output_dim=question_weights.shape[1],
+                                weights=[question_weights])
+        question_embedding = q_embedding(question)
+
+        answer_weights = np.load(self.config.initial_answer_weights())
+        a_embedding = Embedding(input_dim=answer_weights.shape[0],
+                                output_dim=answer_weights.shape[1],
+                                weights=[answer_weights])
+        answer_embedding = a_embedding(answer)
 
         hidden_layer = TimeDistributed(Dense(200, activation='tanh'))
 
@@ -194,7 +202,7 @@ class ConvolutionModel(LanguageModel):
 
         # cnn
         cnns = [Conv1D(kernel_size=kernel_size,
-                       filters=1000,
+                       filters=100,
                        activation='tanh',
                        padding='same') for kernel_size in [2, 3, 5, 7]]
         # question_cnn = merge([cnn(question_embedding) for cnn in cnns], mode='concat')
@@ -269,13 +277,17 @@ class AttentionModel(LanguageModel):
         answer = self.get_answer()
 
         # add embedding layers
-        weights = np.load(self.config.initial_embed_weights())
-        embedding = Embedding(input_dim=self.config.n_words(),
-                              output_dim=weights.shape[1],
-                              # mask_zero=True,
-                              weights=[weights])
-        question_embedding = embedding(question)
-        answer_embedding = embedding(answer)
+        question_weights = np.load(self.config.initial_question_weights())
+        q_embedding = Embedding(input_dim=question_weights.shape[0],
+                                output_dim=question_weights.shape[1],
+                                weights=[question_weights])
+        question_embedding = q_embedding(question)
+
+        answer_weights = np.load(self.config.initial_answer_weights())
+        a_embedding = Embedding(input_dim=answer_weights.shape[0],
+                                output_dim=answer_weights.shape[1],
+                                weights=[answer_weights])
+        answer_embedding = a_embedding(answer)
 
         # question rnn part
         f_rnn = LSTM(141, return_sequences=True, consume_less='mem')
