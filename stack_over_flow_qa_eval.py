@@ -147,7 +147,7 @@ class Evaluator:
 
     def evaluate(self, X = None, name = None):
         self.load_epoch(name)
-        data = self.eval_data if X is none else X
+        data = self.eval_data if X is None else X
         top1, mrr = self.get_score(data, verbose=True)
         return top1, mrr
 
