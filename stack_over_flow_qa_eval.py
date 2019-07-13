@@ -26,6 +26,7 @@ from scipy.stats import rankdata
 import logging
 import numpy as np
 import tensorflow as tf
+import pandas as pd
 
 def clear_session():
     K.clear_session()
@@ -132,23 +133,29 @@ class Evaluator:
 
     def train_and_evaluate(self, mode='train'):
         val_losses = []
-        top1s = []
-        mrrs = []
+
+
         if mode == 'train':
             val_loss = self.train(self.training_data)
             val_losses.append(val_loss)
             logger.info(f'Val loss: {val_loss}')
 
         elif mode == 'evaluate':
-            top1, mrr = self.evaluate()
-            top1s.append(top1)
-            mrrs.append(mrr)
-            logger.info(f'Top-1 Precision: {top1}, MRR: {mrr}')
+            results = {'top1': [], 'mrr': []}
+            logger.info('Evaluating...')
+            for i in range(0, 20):
+                top1, mrr = self.evaluate(shuffle=True)
+                results['top1'].append(top1)
+                results['mrr'].append(mrr)
+                logger.info(f'Iteration: {i}: Top-1 Precision {top1}, MRR {mrr}')
+            df = pd.DataFrame(results)
+            df.describe()
 
-    def evaluate(self, X = None, name = None):
+
+    def evaluate(self, X = None, name = None, shuffle=False):
         self.load_epoch(name)
         data = self.eval_data if X is None else X
-        top1, mrr = self.get_score(data, verbose=False)
+        top1, mrr = self.get_score(data, verbose=False, shuffle=shuffle)
         return top1, mrr
 
     def train(self, X):
@@ -212,11 +219,11 @@ class Evaluator:
             # Article: "Summarizing Source Code using a Neural Attention Model"
             # terminate training when the learning rate goes
             # below 0.001.
-            if val_loss < 0.001:
+            if loss < 0.001:
                 break
 
         # save plot val_loss, loss
-        report = ReportResult(hist_losses, [i for i in range(1, nb_epoch + 1)], self.name)
+        report = ReportResult(hist_losses, [i for i in range(1, len(hist_losses['loss']) + 1)], self.name)
         plot = report.generate_line_report()
         report.save_plot()
 
