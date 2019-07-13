@@ -53,7 +53,9 @@ class Evaluator:
         self.model.compile(optimizer)
 
         self.answers = self.load('answers.json') # self.load('generated')
-        self.data = self.load('sof_python_data_labeled.json')
+        self.training_data = self.load('training.json')
+        self.dev_data = self.load('dev.json')
+        self.eval_data = self.load('eval.json')
         self._vocab = None
         self._reverse_vocab = None
         self._eval_sets = None
@@ -86,16 +88,18 @@ class Evaluator:
 
     ##### Loading / saving #####
 
-    def save_epoch(self):
+    def save_epoch(self, name = None):
         if not os.path.exists('models/'):
             os.makedirs('models/')
-        logger.info(f'Saving weights: models/weights_epoch_{self.name}.h5')
-        self.model.save_weights(f'models/weights_epoch_{self.name}.h5', overwrite=True)
+        suffix = self.name if name is None else name
+        logger.info(f'Saving weights: models/weights_epoch_{suffix}.h5')
+        self.model.save_weights(f'models/weights_epoch_{suffix}.h5', overwrite=True)
 
-    def load_epoch(self):
-        assert os.path.exists(f'models/weights_epoch_{self.name}.h5'), f'Weights at epoch {self.name} not found'
-        logger.info(f'Loading weights: models/weights_epoch_{self.name}.h5')
-        self.model.load_weights(f'models/weights_epoch_{self.name}.h5')
+    def load_epoch(self, name = None):
+        suffix = self.name if name is None else name
+        assert os.path.exists(f'models/weights_epoch_{suffix}.h5'), f'Weights at epoch {suffix} not found'
+        logger.info(f'Loading weights: models/weights_epoch_{suffix}.h5')
+        self.model.load_weights(f'models/weights_epoch_{suffix}.h5')
 
     ##### Converting / reverting #####
 
@@ -127,32 +131,25 @@ class Evaluator:
         return strftime('%Y-%m-%d %H:%M:%S', gmtime())
 
     def train_and_evaluate(self, mode='train'):
-
-
-        X = np.array(self.data)
-
         val_losses = []
         top1s = []
         mrrs = []
-
-        test_size = self.params['test_size']
-
-        X_train, X_test = train_test_split(
-        X, test_size = test_size, random_state = 42)
-
         if mode == 'train':
-            val_loss = self.train(X_train)
+            val_loss = self.train(self.training_data)
             val_losses.append(val_loss)
             logger.info(f'Val loss: {val_loss}')
 
         elif mode == 'evaluate':
-            self.load_epoch()
-            top1, mrr = self.get_score(X_test, verbose=True)
+            top1, mrr = self.evaluate()
             top1s.append(top1)
             mrrs.append(mrr)
             logger.info(f'Top-1 Precision: {top1}, MRR: {mrr}')
 
-
+    def evaluate(self, X = None, name = None):
+        self.load_epoch(name)
+        data = self.eval_data if X is none else X
+        top1, mrr = self.get_score(data, verbose=True)
+        return top1, mrr
 
     def train(self, X):
         batch_size = self.params['batch_size']
@@ -180,7 +177,8 @@ class Evaluator:
         # a global minimum has been obtained.
 
 
-        best_val_loss = {'loss': 1., 'epoch': 0}
+
+        best_top1_mrr = {'mrr': 0, 'top1': 0}
         hist_losses = {'val_loss': [], 'loss': []}
 
         for i in range(1, nb_epoch + 1):
@@ -196,16 +194,25 @@ class Evaluator:
             hist_losses['val_loss'].append(val_loss)
             hist_losses['loss'].append(loss)
 
-            if val_loss < best_val_loss['loss']:
-                print(hist.history)
-                best_val_loss = {'loss': val_loss, 'epoch': i}
+            # temporary weights from last training
+            self.save_epoch('aux')
 
+            # check MRR
+            top1, mrr = self.evaluate(self.dev_data, 'aux')
+
+            if mrr > best_top1_mrr['mrr']:
                 logger.info('%s -- Epoch %d ' % (self.get_time(), i) +
                             'Loss = %.4f, Validation Loss = %.4f ' % (loss, val_loss) +
-                            '(Best: Loss = %.4f, Epoch = %d)' % (best_val_loss['loss'], best_val_loss['epoch']))
+                            '(Best: MRR = %.4f, TOP1 = %d)' % (best_top1_mrr['mrr'], best_top1_mrr['top1']))
 
                 # saving weights
                 self.save_epoch()
+
+            # Article: "Summarizing Source Code using a Neural Attention Model"
+            # terminate training when the learning rate goes
+            # below 0.001.
+            if val_loss < 0.001:
+                break
 
         # save plot val_loss, loss
         report = ReportResult(hist_losses, [i for i in range(1, nb_epoch + 1)], self.name)
