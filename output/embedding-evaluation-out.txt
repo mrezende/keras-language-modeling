@@ -1,0 +1,166 @@
+Using TensorFlow backend.
+WARNING: Logging before flag parsing goes to stderr.
+I0713 20:56:40.118764 140000513550208 stack_over_flow_qa_eval.py:309] running stack_over_flow_qa_eval.py --mode evaluate --model embedding
+I0713 20:56:40.120093 140000513550208 stack_over_flow_qa_eval.py:322] Conf.json: {'question_len': 150, 'answer_len': 150, 'margin': 0.009, 'initial_question_weights': 'word2vec_question_100_dim.embeddings', 'initial_answer_weights': 'word2vec_code_100_dim.embeddings', 'training': {'batch_size': 256, 'nb_epoch': 80, 'validation_split': 0.3, 'optimizer': 'adam', 'test_size': 0.4}, 'similarity': {'mode': 'cosine', 'gamma': 1, 'c': 1, 'd': 2, 'dropout': 0.5}}
+W0713 20:56:40.120447 140000513550208 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:517: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+
+I0713 20:56:40.143231 140000513550208 stack_over_flow_qa_eval.py:48] Initializing Evaluator ...
+I0713 20:56:40.143404 140000513550208 stack_over_flow_qa_eval.py:49] Name: 569229_EmbeddingModel
+W0713 20:56:40.175183 140000513550208 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:74: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+
+W0713 20:56:40.175866 140000513550208 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:4138: The name tf.random_uniform is deprecated. Please use tf.random.uniform instead.
+
+W0713 20:56:40.187291 140000513550208 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:174: The name tf.get_default_session is deprecated. Please use tf.compat.v1.get_default_session instead.
+
+W0713 20:56:40.187533 140000513550208 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:181: The name tf.ConfigProto is deprecated. Please use tf.compat.v1.ConfigProto instead.
+
+2019-07-13 20:56:40.196813: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2300000000 Hz
+2019-07-13 20:56:40.197109: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x3000a00 executing computations on platform Host. Devices:
+2019-07-13 20:56:40.197148: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): <undefined>, <undefined>
+2019-07-13 20:56:40.200385: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+2019-07-13 20:56:40.294305: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:1005] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2019-07-13 20:56:40.294999: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x8907500 executing computations on platform CUDA. Devices:
+2019-07-13 20:56:40.295040: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): Tesla K80, Compute Capability 3.7
+2019-07-13 20:56:40.295383: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:1005] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2019-07-13 20:56:40.295865: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: Tesla K80 major: 3 minor: 7 memoryClockRate(GHz): 0.8235
+pciBusID: 0000:00:04.0
+2019-07-13 20:56:40.296429: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.0
+2019-07-13 20:56:40.298469: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10.0
+2019-07-13 20:56:40.300406: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10.0
+2019-07-13 20:56:40.300972: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10.0
+2019-07-13 20:56:40.304105: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10.0
+2019-07-13 20:56:40.306003: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10.0
+2019-07-13 20:56:40.312122: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2019-07-13 20:56:40.312318: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:1005] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2019-07-13 20:56:40.312906: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:1005] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2019-07-13 20:56:40.313377: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 0
+2019-07-13 20:56:40.313458: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.0
+2019-07-13 20:56:40.315074: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2019-07-13 20:56:40.315117: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      0 
+2019-07-13 20:56:40.315142: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 0:   N 
+2019-07-13 20:56:40.315531: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:1005] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2019-07-13 20:56:40.316136: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:1005] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2019-07-13 20:56:40.316593: W tensorflow/core/common_runtime/gpu/gpu_bfc_allocator.cc:40] Overriding allow_growth setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was 0.
+2019-07-13 20:56:40.316654: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 6708 MB memory) -> physical GPU (device: 0, name: Tesla K80, pci bus id: 0000:00:04.0, compute capability: 3.7)
+W0713 20:56:41.285484 140000513550208 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/dist-packages/keras/optimizers.py:790: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.
+
+I0713 20:56:44.479876 140000513550208 stack_over_flow_qa_eval.py:147] Evaluating...
+I0713 20:56:44.480226 140000513550208 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_EmbeddingModel.h5
+I0713 20:56:44.585561 140000513550208 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:56:47.384354 140000513550208 stack_over_flow_qa_eval.py:152] Iteration: 0: Top-1 Precision 0.34812760055478503, MRR 0.5115988832463065
+I0713 20:56:47.384664 140000513550208 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_EmbeddingModel.h5
+I0713 20:56:47.409741 140000513550208 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:56:50.124975 140000513550208 stack_over_flow_qa_eval.py:152] Iteration: 1: Top-1 Precision 0.3564493758668516, MRR 0.5103618675213254
+I0713 20:56:50.125269 140000513550208 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_EmbeddingModel.h5
+I0713 20:56:50.147861 140000513550208 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:56:52.907071 140000513550208 stack_over_flow_qa_eval.py:152] Iteration: 2: Top-1 Precision 0.34674063800277394, MRR 0.507107789850455
+I0713 20:56:52.907388 140000513550208 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_EmbeddingModel.h5
+I0713 20:56:52.931241 140000513550208 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:56:55.997877 140000513550208 stack_over_flow_qa_eval.py:152] Iteration: 3: Top-1 Precision 0.37170596393897365, MRR 0.5240821449481737
+I0713 20:56:55.998215 140000513550208 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_EmbeddingModel.h5
+I0713 20:56:56.021070 140000513550208 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:56:59.245486 140000513550208 stack_over_flow_qa_eval.py:152] Iteration: 4: Top-1 Precision 0.3869625520110957, MRR 0.5390080393512597
+I0713 20:56:59.245788 140000513550208 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_EmbeddingModel.h5
+I0713 20:56:59.269091 140000513550208 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:57:01.969075 140000513550208 stack_over_flow_qa_eval.py:152] Iteration: 5: Top-1 Precision 0.3647711511789182, MRR 0.5242378327931903
+I0713 20:57:01.969348 140000513550208 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_EmbeddingModel.h5
+I0713 20:57:02.008545 140000513550208 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:57:04.860510 140000513550208 stack_over_flow_qa_eval.py:152] Iteration: 6: Top-1 Precision 0.40499306518723993, MRR 0.5462135941710442
+I0713 20:57:04.861369 140000513550208 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_EmbeddingModel.h5
+I0713 20:57:04.904432 140000513550208 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:57:07.705360 140000513550208 stack_over_flow_qa_eval.py:152] Iteration: 7: Top-1 Precision 0.4105409153952843, MRR 0.560690572834543
+I0713 20:57:07.705682 140000513550208 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_EmbeddingModel.h5
+I0713 20:57:07.729422 140000513550208 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:57:10.431037 140000513550208 stack_over_flow_qa_eval.py:152] Iteration: 8: Top-1 Precision 0.37447988904299584, MRR 0.5215440400550715
+I0713 20:57:10.431340 140000513550208 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_EmbeddingModel.h5
+I0713 20:57:10.462483 140000513550208 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:57:13.561030 140000513550208 stack_over_flow_qa_eval.py:152] Iteration: 9: Top-1 Precision 0.37170596393897365, MRR 0.5301171843082614
+I0713 20:57:13.561283 140000513550208 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_EmbeddingModel.h5
+I0713 20:57:13.602170 140000513550208 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:57:16.891223 140000513550208 stack_over_flow_qa_eval.py:152] Iteration: 10: Top-1 Precision 0.406380027739251, MRR 0.5489532243932473
+I0713 20:57:16.891466 140000513550208 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_EmbeddingModel.h5
+I0713 20:57:16.932005 140000513550208 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:57:20.661648 140000513550208 stack_over_flow_qa_eval.py:152] Iteration: 11: Top-1 Precision 0.31900138696255204, MRR 0.4848682069959124
+I0713 20:57:20.661889 140000513550208 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_EmbeddingModel.h5
+I0713 20:57:20.714822 140000513550208 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:57:24.163819 140000513550208 stack_over_flow_qa_eval.py:152] Iteration: 12: Top-1 Precision 0.3814147018030513, MRR 0.5281959248662681
+I0713 20:57:24.164105 140000513550208 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_EmbeddingModel.h5
+I0713 20:57:24.202507 140000513550208 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:57:27.262970 140000513550208 stack_over_flow_qa_eval.py:152] Iteration: 13: Top-1 Precision 0.34674063800277394, MRR 0.5030964372229733
+I0713 20:57:27.263263 140000513550208 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_EmbeddingModel.h5
+I0713 20:57:27.297233 140000513550208 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:57:30.571280 140000513550208 stack_over_flow_qa_eval.py:152] Iteration: 14: Top-1 Precision 0.34257975034674065, MRR 0.5039738096810723
+I0713 20:57:30.571581 140000513550208 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_EmbeddingModel.h5
+I0713 20:57:30.608832 140000513550208 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:57:35.050262 140000513550208 stack_over_flow_qa_eval.py:152] Iteration: 15: Top-1 Precision 0.361997226074896, MRR 0.5245439552019904
+I0713 20:57:35.050563 140000513550208 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_EmbeddingModel.h5
+I0713 20:57:35.100460 140000513550208 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:57:40.990445 140000513550208 stack_over_flow_qa_eval.py:152] Iteration: 16: Top-1 Precision 0.3633841886269071, MRR 0.5278607492475
+I0713 20:57:40.990983 140000513550208 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_EmbeddingModel.h5
+I0713 20:57:41.050640 140000513550208 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:57:46.895282 140000513550208 stack_over_flow_qa_eval.py:152] Iteration: 17: Top-1 Precision 0.3828016643550624, MRR 0.5362590024285535
+I0713 20:57:46.895577 140000513550208 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_EmbeddingModel.h5
+I0713 20:57:46.963789 140000513550208 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:57:52.807776 140000513550208 stack_over_flow_qa_eval.py:152] Iteration: 18: Top-1 Precision 0.3273231622746186, MRR 0.49914590734160513
+I0713 20:57:52.808074 140000513550208 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_EmbeddingModel.h5
+I0713 20:57:52.851396 140000513550208 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:57:58.143327 140000513550208 stack_over_flow_qa_eval.py:152] Iteration: 19: Top-1 Precision 0.36893203883495146, MRR 0.5253270912778306
+I0713 20:57:58.220577 140000513550208 stack_over_flow_qa_eval.py:156] Top1 Description: count    20.000000
+mean      0.366852
+std       0.024768
+min       0.319001
+25%       0.347781
+50%       0.366852
+75%       0.381761
+max       0.410541
+Name: top1, dtype: float64
+I0713 20:57:58.221771 140000513550208 stack_over_flow_qa_eval.py:157] MRR Description: count    20.000000
+mean      0.522859
+std       0.018499
+min       0.484868
+25%       0.509548
+50%       0.524391
+75%       0.531653
+max       0.560691
+Name: mrr, dtype: float64
+Top-1 Precision: 0.348128
+MRR: 0.511599
+Top-1 Precision: 0.356449
+MRR: 0.510362
+Top-1 Precision: 0.346741
+MRR: 0.507108
+Top-1 Precision: 0.371706
+MRR: 0.524082
+Top-1 Precision: 0.386963
+MRR: 0.539008
+Top-1 Precision: 0.364771
+MRR: 0.524238
+Top-1 Precision: 0.404993
+MRR: 0.546214
+Top-1 Precision: 0.410541
+MRR: 0.560691
+Top-1 Precision: 0.374480
+MRR: 0.521544
+Top-1 Precision: 0.371706
+MRR: 0.530117
+Top-1 Precision: 0.406380
+MRR: 0.548953
+Top-1 Precision: 0.319001
+MRR: 0.484868
+Top-1 Precision: 0.381415
+MRR: 0.528196
+Top-1 Precision: 0.346741
+MRR: 0.503096
+Top-1 Precision: 0.342580
+MRR: 0.503974
+Top-1 Precision: 0.361997
+MRR: 0.524544
+Top-1 Precision: 0.363384
+MRR: 0.527861
+Top-1 Precision: 0.382802
+MRR: 0.536259
+Top-1 Precision: 0.327323
+MRR: 0.499146
+Top-1 Precision: 0.368932
+MRR: 0.525327

@@ -1,0 +1,168 @@
+Using TensorFlow backend.
+WARNING: Logging before flag parsing goes to stderr.
+I0713 20:57:20.444798 139707563075456 stack_over_flow_qa_eval.py:309] running stack_over_flow_qa_eval.py --mode evaluate --model cnn
+I0713 20:57:20.454406 139707563075456 stack_over_flow_qa_eval.py:322] Conf.json: {'question_len': 150, 'answer_len': 150, 'margin': 0.009, 'initial_question_weights': 'word2vec_question_100_dim.embeddings', 'initial_answer_weights': 'word2vec_code_100_dim.embeddings', 'training': {'batch_size': 256, 'nb_epoch': 80, 'validation_split': 0.3, 'optimizer': 'adam', 'test_size': 0.4}, 'similarity': {'mode': 'cosine', 'gamma': 1, 'c': 1, 'd': 2, 'dropout': 0.5}}
+W0713 20:57:20.454806 139707563075456 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:517: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+
+I0713 20:57:20.531345 139707563075456 stack_over_flow_qa_eval.py:48] Initializing Evaluator ...
+I0713 20:57:20.531574 139707563075456 stack_over_flow_qa_eval.py:49] Name: 569229_ConvolutionModel
+W0713 20:57:20.589581 139707563075456 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:74: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+
+W0713 20:57:20.592694 139707563075456 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:4138: The name tf.random_uniform is deprecated. Please use tf.random.uniform instead.
+
+W0713 20:57:20.621069 139707563075456 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:174: The name tf.get_default_session is deprecated. Please use tf.compat.v1.get_default_session instead.
+
+W0713 20:57:20.621387 139707563075456 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:181: The name tf.ConfigProto is deprecated. Please use tf.compat.v1.ConfigProto instead.
+
+2019-07-13 20:57:20.650451: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2300000000 Hz
+2019-07-13 20:57:20.650725: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x3154a00 executing computations on platform Host. Devices:
+2019-07-13 20:57:20.650756: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): <undefined>, <undefined>
+2019-07-13 20:57:20.655965: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+2019-07-13 20:57:20.792075: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:1005] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2019-07-13 20:57:20.792708: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x8a5f500 executing computations on platform CUDA. Devices:
+2019-07-13 20:57:20.792746: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): Tesla K80, Compute Capability 3.7
+2019-07-13 20:57:20.793012: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:1005] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2019-07-13 20:57:20.793479: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: Tesla K80 major: 3 minor: 7 memoryClockRate(GHz): 0.8235
+pciBusID: 0000:00:04.0
+2019-07-13 20:57:20.793952: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.0
+2019-07-13 20:57:20.795835: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10.0
+2019-07-13 20:57:20.798002: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10.0
+2019-07-13 20:57:20.798482: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10.0
+2019-07-13 20:57:20.800946: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10.0
+2019-07-13 20:57:20.807778: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10.0
+2019-07-13 20:57:20.816878: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2019-07-13 20:57:20.817135: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:1005] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2019-07-13 20:57:20.817768: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:1005] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2019-07-13 20:57:20.818227: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 0
+2019-07-13 20:57:20.818335: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.0
+2019-07-13 20:57:20.829468: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2019-07-13 20:57:20.829526: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      0 
+2019-07-13 20:57:20.829555: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 0:   N 
+2019-07-13 20:57:20.831122: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:1005] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2019-07-13 20:57:20.831670: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:1005] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2019-07-13 20:57:20.834091: W tensorflow/core/common_runtime/gpu/gpu_bfc_allocator.cc:40] Overriding allow_growth setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was 0.
+2019-07-13 20:57:20.834157: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 6533 MB memory) -> physical GPU (device: 0, name: Tesla K80, pci bus id: 0000:00:04.0, compute capability: 3.7)
+W0713 20:57:23.478218 139707563075456 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/dist-packages/keras/optimizers.py:790: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.
+
+I0713 20:57:29.206285 139707563075456 stack_over_flow_qa_eval.py:147] Evaluating...
+I0713 20:57:29.206609 139707563075456 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_ConvolutionModel.h5
+I0713 20:57:29.741986 139707563075456 stack_over_flow_qa_eval.py:247] len X: 721
+2019-07-13 20:57:29.881867: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10.0
+2019-07-13 20:57:30.387116: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+I0713 20:57:46.556186 139707563075456 stack_over_flow_qa_eval.py:152] Iteration: 0: Top-1 Precision 0.3925104022191401, MRR 0.5629328087325394
+I0713 20:57:46.556450 139707563075456 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_ConvolutionModel.h5
+I0713 20:57:46.607336 139707563075456 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:58:00.389089 139707563075456 stack_over_flow_qa_eval.py:152] Iteration: 1: Top-1 Precision 0.44798890429958393, MRR 0.6082520269613776
+I0713 20:58:00.389367 139707563075456 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_ConvolutionModel.h5
+I0713 20:58:00.443409 139707563075456 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:58:13.089344 139707563075456 stack_over_flow_qa_eval.py:152] Iteration: 2: Top-1 Precision 0.39528432732316227, MRR 0.5589621745949335
+I0713 20:58:13.089638 139707563075456 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_ConvolutionModel.h5
+I0713 20:58:13.121159 139707563075456 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:58:25.645867 139707563075456 stack_over_flow_qa_eval.py:152] Iteration: 3: Top-1 Precision 0.43828016643550627, MRR 0.5944837016784387
+I0713 20:58:25.646183 139707563075456 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_ConvolutionModel.h5
+I0713 20:58:25.678169 139707563075456 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:58:38.443723 139707563075456 stack_over_flow_qa_eval.py:152] Iteration: 4: Top-1 Precision 0.40499306518723993, MRR 0.5811443899221963
+I0713 20:58:38.444093 139707563075456 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_ConvolutionModel.h5
+I0713 20:58:38.478686 139707563075456 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:58:51.381358 139707563075456 stack_over_flow_qa_eval.py:152] Iteration: 5: Top-1 Precision 0.42441054091539526, MRR 0.5875781112508375
+I0713 20:58:51.381647 139707563075456 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_ConvolutionModel.h5
+I0713 20:58:51.417410 139707563075456 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:59:04.166529 139707563075456 stack_over_flow_qa_eval.py:152] Iteration: 6: Top-1 Precision 0.4133148404993065, MRR 0.5773566185428866
+I0713 20:59:04.166809 139707563075456 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_ConvolutionModel.h5
+I0713 20:59:04.199333 139707563075456 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:59:17.025865 139707563075456 stack_over_flow_qa_eval.py:152] Iteration: 7: Top-1 Precision 0.420249653259362, MRR 0.5905738821725114
+I0713 20:59:17.026180 139707563075456 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_ConvolutionModel.h5
+I0713 20:59:17.058760 139707563075456 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:59:29.708838 139707563075456 stack_over_flow_qa_eval.py:152] Iteration: 8: Top-1 Precision 0.4105409153952843, MRR 0.5838346799740837
+I0713 20:59:29.709141 139707563075456 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_ConvolutionModel.h5
+I0713 20:59:29.740096 139707563075456 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:59:42.129064 139707563075456 stack_over_flow_qa_eval.py:152] Iteration: 9: Top-1 Precision 0.39667128987517336, MRR 0.5766444016814302
+I0713 20:59:42.129358 139707563075456 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_ConvolutionModel.h5
+I0713 20:59:42.160997 139707563075456 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 20:59:55.052254 139707563075456 stack_over_flow_qa_eval.py:152] Iteration: 10: Top-1 Precision 0.44798890429958393, MRR 0.6059174960473233
+I0713 20:59:55.052555 139707563075456 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_ConvolutionModel.h5
+I0713 20:59:55.086410 139707563075456 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 21:00:08.005685 139707563075456 stack_over_flow_qa_eval.py:152] Iteration: 11: Top-1 Precision 0.435506241331484, MRR 0.5822042205877734
+I0713 21:00:08.006032 139707563075456 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_ConvolutionModel.h5
+I0713 21:00:08.041640 139707563075456 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 21:00:20.617266 139707563075456 stack_over_flow_qa_eval.py:152] Iteration: 12: Top-1 Precision 0.40360610263522884, MRR 0.5718390328447317
+I0713 21:00:20.617578 139707563075456 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_ConvolutionModel.h5
+I0713 21:00:20.664146 139707563075456 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 21:00:33.329944 139707563075456 stack_over_flow_qa_eval.py:152] Iteration: 13: Top-1 Precision 0.40499306518723993, MRR 0.5727452335040556
+I0713 21:00:33.330242 139707563075456 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_ConvolutionModel.h5
+I0713 21:00:33.362645 139707563075456 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 21:00:46.164967 139707563075456 stack_over_flow_qa_eval.py:152] Iteration: 14: Top-1 Precision 0.39805825242718446, MRR 0.5701527645242017
+I0713 21:00:46.165257 139707563075456 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_ConvolutionModel.h5
+I0713 21:00:46.211164 139707563075456 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 21:00:58.797500 139707563075456 stack_over_flow_qa_eval.py:152] Iteration: 15: Top-1 Precision 0.40499306518723993, MRR 0.5793648503522224
+I0713 21:00:58.797890 139707563075456 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_ConvolutionModel.h5
+I0713 21:00:58.834131 139707563075456 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 21:01:11.652163 139707563075456 stack_over_flow_qa_eval.py:152] Iteration: 16: Top-1 Precision 0.39528432732316227, MRR 0.5737098006461204
+I0713 21:01:11.652781 139707563075456 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_ConvolutionModel.h5
+I0713 21:01:11.685545 139707563075456 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 21:01:24.556253 139707563075456 stack_over_flow_qa_eval.py:152] Iteration: 17: Top-1 Precision 0.39528432732316227, MRR 0.5760079522620605
+I0713 21:01:24.556739 139707563075456 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_ConvolutionModel.h5
+I0713 21:01:24.588188 139707563075456 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 21:01:37.373853 139707563075456 stack_over_flow_qa_eval.py:152] Iteration: 18: Top-1 Precision 0.4077669902912621, MRR 0.5791546514719292
+I0713 21:01:37.374104 139707563075456 stack_over_flow_qa_eval.py:104] Loading weights: models/weights_epoch_569229_ConvolutionModel.h5
+I0713 21:01:37.401821 139707563075456 stack_over_flow_qa_eval.py:247] len X: 721
+I0713 21:01:50.057346 139707563075456 stack_over_flow_qa_eval.py:152] Iteration: 19: Top-1 Precision 0.44660194174757284, MRR 0.606544600573613
+I0713 21:01:50.097104 139707563075456 stack_over_flow_qa_eval.py:156] Top1 Description: count    20.000000
+mean      0.414216
+std       0.019251
+min       0.392510
+25%       0.397712
+50%       0.406380
+75%       0.427184
+max       0.447989
+Name: top1, dtype: float64
+I0713 21:01:50.098177 139707563075456 stack_over_flow_qa_eval.py:157] MRR Description: count    20.000000
+mean      0.581970
+std       0.013614
+min       0.558962
+25%       0.573469
+50%       0.579260
+75%       0.588327
+max       0.608252
+Name: mrr, dtype: float64
+Top-1 Precision: 0.392510
+MRR: 0.562933
+Top-1 Precision: 0.447989
+MRR: 0.608252
+Top-1 Precision: 0.395284
+MRR: 0.558962
+Top-1 Precision: 0.438280
+MRR: 0.594484
+Top-1 Precision: 0.404993
+MRR: 0.581144
+Top-1 Precision: 0.424411
+MRR: 0.587578
+Top-1 Precision: 0.413315
+MRR: 0.577357
+Top-1 Precision: 0.420250
+MRR: 0.590574
+Top-1 Precision: 0.410541
+MRR: 0.583835
+Top-1 Precision: 0.396671
+MRR: 0.576644
+Top-1 Precision: 0.447989
+MRR: 0.605917
+Top-1 Precision: 0.435506
+MRR: 0.582204
+Top-1 Precision: 0.403606
+MRR: 0.571839
+Top-1 Precision: 0.404993
+MRR: 0.572745
+Top-1 Precision: 0.398058
+MRR: 0.570153
+Top-1 Precision: 0.404993
+MRR: 0.579365
+Top-1 Precision: 0.395284
+MRR: 0.573710
+Top-1 Precision: 0.395284
+MRR: 0.576008
+Top-1 Precision: 0.407767
+MRR: 0.579155
+Top-1 Precision: 0.446602
+MRR: 0.606545

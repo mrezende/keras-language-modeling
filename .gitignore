@@ -10,7 +10,6 @@ treq_eval*
 
 # large "data" files
 *.pkl
-*.txt
 *.dict
 *.model
 *.embeddings
