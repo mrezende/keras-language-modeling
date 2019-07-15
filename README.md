@@ -1,11 +1,11 @@
 # keras-language-modeling
 
-Some code for doing language modeling with Keras, in particular for question-answering tasks. I wrote a very long blog post that explains how a lot of this works, which can be found [here](http://benjaminbolte.com/blog/2016/keras-language-modeling.html).
+Some code for doing language modeling with Keras, in particular for question-answering tasks. It's code was adapted for code retrieval task. The original repository is https://github.com/codekansas/keras-language-modeling
 
 ### Stuff that might be of interest
 
  - `attention_lstm.py`: Attentional LSTM, based on one of the papers referenced in the blog post and others. One application used it for [image captioning](http://arxiv.org/pdf/1502.03044.pdf). It is initialized with an attention vector which provides the attention component for the neural network.
- - `insurance_qa_eval.py`: Evaluation framework for the InsuranceQA dataset. To get this working, clone the [data repository](https://github.com/codekansas/insurance_qa_python) and set the `INSURANCE_QA` environment variable to the cloned repository. Changing `config` will adjust how the model is trained.
+ - `stack_over_flow_qa_eval.py`: Evaluation framework for the Staqc dataset. To get this working, clone the [data repository](https://github.com/codekansas/insurance_qa_python) and set the `INSURANCE_QA` environment variable to the cloned repository. Changing `config` will adjust how the model is trained.
  - `keras-language-model.py`: The `LanguageModel` class uses the `config` settings to generate a training model and a testing model. The model can be trained by passing a question vector, a ground truth answer vector, and a bad answer vector to `fit`. Then `predict` calculates the similarity between a question and answer. Override the `build` method with whatever language model you want to get a trainable model. Examples are provided at the bottom, including the `EmbeddingModel`, `ConvolutionModel`, and `RecurrentModel`.
 
 ### Getting Started
