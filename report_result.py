@@ -21,7 +21,7 @@ class ReportResult:
 
     def generate_histogram(self):
         self.fig, ax = plt.subplots()
-        df.hist(column='positions', bins=50, ax=ax)
+        self.df.hist(column='positions', bins=50, ax=ax)
 
 
     def save_plot(self):
