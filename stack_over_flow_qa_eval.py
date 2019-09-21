@@ -156,7 +156,7 @@ class Evaluator:
             mrr_desc = df.describe()['mrr']
 
             # save histogram plot
-            report = ReportResult(results['positions'], plot_name = f'histogram_{self.name}')
+            report = ReportResult({'positions': results['positions']}, plot_name = f'histogram_{self.name}')
             report.generate_histogram()
             report.save_plot()
 
