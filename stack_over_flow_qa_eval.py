@@ -283,10 +283,11 @@ class Evaluator:
             c_1 += 1 if max_r == max_n else 0
             position = r[max_r] - r[max_n] + 1
             c_2 += 1 / float(position)
+            positions.append(position)
 
         top1 = c_1 / float(len(X))
         mrr = c_2 / float(len(X))
-        positions.append(position)
+
 
         print('Top-1 Precision: %f' % top1)
         print('MRR: %f' % mrr)
