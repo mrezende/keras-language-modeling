@@ -143,16 +143,23 @@ class Evaluator:
             logger.info(f'Val loss: {val_loss}')
 
         elif mode == 'evaluate':
-            results = {'top1': [], 'mrr': []}
+            results = {'top1': [], 'mrr': [], 'positions' : []}
             logger.info('Evaluating...')
             for i in range(0, 20):
-                top1, mrr = self.evaluate(shuffle=True)
+                top1, mrr, positions = self.evaluate(shuffle=True)
                 results['top1'].append(top1)
                 results['mrr'].append(mrr)
-                logger.info(f'Iteration: {i}: Top-1 Precision {top1}, MRR {mrr}')
+                results['positions'].append(positions)
+                logger.info(f'Iteration: {i}: Top-1 Precision {top1}, MRR {mrr}, Positions: {positions}')
             df = pd.DataFrame(results)
             top1_desc = df.describe()['top1']
             mrr_desc = df.describe()['mrr']
+
+            # save histogram plot
+            report = ReportResult(df['positions'], plot_name = f'histogram_{self.name}')
+            report.generate_histogram()
+            report.save_plot()
+
             logger.info(f'Top1 Description: {top1_desc}')
             logger.info(f'MRR Description: {mrr_desc}')
 
@@ -160,8 +167,8 @@ class Evaluator:
     def evaluate(self, X = None, name = None, shuffle=False):
         self.load_epoch(name)
         data = self.eval_data if X is None else X
-        top1, mrr = self.get_score(data, verbose=False, shuffle=shuffle)
-        return top1, mrr
+        top1, mrr, positions = self.get_score(data, verbose=False, shuffle=shuffle)
+        return top1, mrr, positions
 
     def train(self, X):
         batch_size = self.params['batch_size']
@@ -210,7 +217,7 @@ class Evaluator:
             self.save_epoch('aux')
 
             # check MRR
-            top1, mrr = self.evaluate(self.dev_data, 'aux')
+            top1, mrr, positions = self.evaluate(self.dev_data, 'aux')
 
             if mrr > best_top1_mrr['mrr']:
                 best_top1_mrr['top1'] = top1
@@ -245,6 +252,7 @@ class Evaluator:
         c_1, c_2 = 0, 0
         random_bad_answers = random.sample(self.answers, 49)
         logger.info(f'len X: {len(X)}')
+        positions = []
         for i, d in enumerate(X):
             bad_answers = d['bad_answers'] if shuffle is False else random_bad_answers
             answers = d['good_answers'] + bad_answers
@@ -273,16 +281,17 @@ class Evaluator:
                 logger.info(' ----- end question ----- ')
 
             c_1 += 1 if max_r == max_n else 0
-            c_2 += 1 / float(r[max_r] - r[max_n] + 1)
+            position = r[max_r] - r[max_n] + 1
+            c_2 += 1 / float(position)
 
         top1 = c_1 / float(len(X))
         mrr = c_2 / float(len(X))
-
+        positions.append(position)
 
         print('Top-1 Precision: %f' % top1)
         print('MRR: %f' % mrr)
 
-        return top1, mrr
+        return top1, mrr, positions
 
     def save_score(self):
         with open('results_conf.txt', 'a+') as append_file:

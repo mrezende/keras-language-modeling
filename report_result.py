@@ -8,7 +8,7 @@ import pandas as pd
 
 
 class ReportResult:
-    def __init__(self, data, index, plot_name):
+    def __init__(self, data, index=None, plot_name=None):
         self.df = df = pd.DataFrame(data, index=index)
         self.plot_name = plot_name
 
@@ -17,6 +17,11 @@ class ReportResult:
         self.fig = plt.gcf()
         plt.show()
         return plot
+
+
+    def generate_histogram(self):
+        self.fig, ax = plt.subplots()
+        df.hist(column='positions', bins=50, ax=ax)
 
 
     def save_plot(self):
