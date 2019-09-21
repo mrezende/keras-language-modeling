@@ -167,7 +167,7 @@ class Evaluator:
     def evaluate(self, X = None, name = None, shuffle=False):
         self.load_epoch(name)
         data = self.eval_data if X is None else X
-        top1, mrr, positions = self.get_score(data, verbose=False, shuffle=shuffle)
+        top1, mrr, positions = self.get_score(data, verbose=True, shuffle=shuffle)
         return top1, mrr, positions
 
     def train(self, X):
